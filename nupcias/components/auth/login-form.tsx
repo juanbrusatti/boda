@@ -15,12 +15,9 @@ export function LoginForm() {
     setIsLoading(true)
 
     try {
-      console.log('[LOGIN-FORM] Form submitted')
       const formData = new FormData(e.currentTarget)
-      console.log('[LOGIN-FORM] Calling loginAction...')
       
       const result = await loginAction(formData)
-      console.log('[LOGIN-FORM] loginAction response:', result)
 
       if (!result.success) {
         console.error('[LOGIN-FORM] Login failed:', result.error)
@@ -29,18 +26,13 @@ export function LoginForm() {
         return
       }
 
-      // ✅ Login successful
-      console.log('[LOGIN-FORM] Login successful, user data:', result.data)
       
       // Redirect to dashboard based on role
       if (result.data?.role === 'master_admin') {
-        console.log('[LOGIN-FORM] Redirecting to /admin/dashboard')
         router.push('/admin/dashboard')
       } else if (result.data?.role === 'client_user') {
-        console.log('[LOGIN-FORM] Redirecting to /dashboard')
         router.push('/dashboard')
       } else {
-        console.warn('[LOGIN-FORM] Unknown role:', result.data?.role)
         router.push('/')
       }
     } catch (err) {
@@ -53,7 +45,7 @@ export function LoginForm() {
 
   return (
     <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px' }}>
-      <h1>Login</h1>
+      <h1>Inicio de sesión</h1>
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
         <div>
@@ -80,7 +72,7 @@ export function LoginForm() {
 
         <div>
           <label htmlFor="password" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-            Password
+            Constraseña
           </label>
           <input
             id="password"
@@ -130,12 +122,12 @@ export function LoginForm() {
             transition: 'background-color 0.2s',
           }}
         >
-          {isLoading ? 'Logging in...' : 'Login'}
+          {isLoading ? 'Iniciando sesión...' : 'Inicio de sesión'}
         </button>
       </form>
 
       <p style={{ marginTop: '20px', textAlign: 'center', fontSize: '14px', color: '#666' }}>
-        Master Admin? Use your email and password to access the admin dashboard.
+       Utilice el email y la contraseña que se generaron para el usuario cliente en el dashboard de administrador para iniciar sesión como cliente.
       </p>
     </div>
   )

@@ -7,7 +7,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { Session } from '@supabase/supabase-js'
+import { AuthChangeEvent, Session } from '@supabase/supabase-js'
 import { User, UserRole, UserPermission } from '@/types/user'
 import { supabase } from '@/lib/supabase'
 import { getUserProfile, updateLastLogin, logoutUser } from '@/services/auth'
@@ -98,7 +98,7 @@ export function useAuth(): UseAuthReturn {
     // Subscribe to auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session: Session | null) => {
       if (isMounted) {
         setSession(session)
 

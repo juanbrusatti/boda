@@ -3,6 +3,7 @@
  * Use only in Server Actions and API routes
  */
 
+import { createClient } from '@supabase/supabase-js'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
@@ -28,4 +29,16 @@ export async function createServerSupabaseClient() {
       },
     }
   )
+}
+
+export function createServerSupabaseAdminClient() {
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (!serviceRoleKey) {
+    throw new Error(
+      'Missing SUPABASE_SERVICE_ROLE_KEY environment variable. The service role key must remain private and must NOT be exposed as NEXT_PUBLIC_.'
+    )
+  }
+
+  return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceRoleKey)
 }
