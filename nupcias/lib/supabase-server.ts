@@ -3,6 +3,7 @@
  * Use only in Server Actions and API routes
  */
 
+import { createClient } from '@supabase/supabase-js'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
@@ -28,4 +29,17 @@ export async function createServerSupabaseClient() {
       },
     }
   )
+}
+
+export function createServerSupabaseAdminClient() {
+  const serviceRoleKey =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY
+
+  if (!serviceRoleKey) {
+    throw new Error(
+      'Missing SUPABASE_SERVICE_ROLE_KEY environment variable. Set either SUPABASE_SERVICE_ROLE_KEY or NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY in .env.local.'
+    )
+  }
+
+  return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceRoleKey)
 }

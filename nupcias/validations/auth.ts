@@ -30,6 +30,13 @@ export const createClientUserSchema = z.object({
 
 export type CreateClientUserInput = z.infer<typeof createClientUserSchema>
 
+export const createClientUserSimpleSchema = z.object({
+  email: z.string().email('Email inválido'),
+  password: z.string().min(8, 'La contraseña debe tener al menos 8 caracteres'),
+})
+
+export type CreateClientUserSimpleInput = z.infer<typeof createClientUserSimpleSchema>
+
 /**
  * Schema for updating user status
  */

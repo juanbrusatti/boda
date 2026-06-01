@@ -24,16 +24,12 @@ export async function loginAction(formData: FormData): Promise<LoginActionResult
     const email = formData.get('email') as string
     const password = formData.get('password') as string
 
-    console.log('[LOGIN] Starting login for email:', email)
-
+  
     // Validate input
     const validated: LoginInput = loginSchema.parse({ email, password })
-    console.log('[LOGIN] Input validated successfully')
-
-    // Perform login
+       // Perform login
     const result = await loginUser(validated)
-    console.log('[LOGIN] Login successful, user ID:', result.user.id)
-    console.log('[LOGIN] User profile:', result.userProfile)
+
 
     if (!result.userProfile) {
       console.error('[LOGIN] ERROR: User profile is null')
@@ -43,7 +39,6 @@ export async function loginAction(formData: FormData): Promise<LoginActionResult
       }
     }
 
-    console.log('[LOGIN] Returning success response')
     return {
       success: true,
       data: {

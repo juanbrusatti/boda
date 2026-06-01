@@ -5,7 +5,7 @@
 
 'use server'
 
-import { createServerSupabaseClient } from '@/lib/supabase-server'
+import { createServerSupabaseClient, createServerSupabaseAdminClient } from '@/lib/supabase-server'
 import { User, UserRole, UserStatus } from '@/types/user'
 import { CreateMasterAdminInput, CreateClientUserInput, LoginInput } from '@/validations/auth'
 
@@ -42,8 +42,9 @@ export async function loginUser(input: LoginInput) {
  * Sign up a new master admin user
  * Should only be callable by existing master admins or initial setup
  */
-export async function signupMasterAdmin(input: CreateMasterAdminInput) {  const supabase = await createServerSupabaseClient()
-    // Create auth user
+export async function signupMasterAdmin(input: CreateMasterAdminInput) {
+  const supabase = await createServerSupabaseAdminClient()
+  // Create auth user
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email: input.email,
     password: input.password,
@@ -82,7 +83,7 @@ export async function signupMasterAdmin(input: CreateMasterAdminInput) {  const 
  * Should only be callable by master admins
  */
 export async function signupClientUser(input: CreateClientUserInput, adminId: string) {
-  const supabase = await createServerSupabaseClient()
+  const supabase = await createServerSupabaseAdminClient()
   
   // Verify admin is master admin
   const admin = await getUserProfile(adminId)
@@ -90,10 +91,11 @@ export async function signupClientUser(input: CreateClientUserInput, adminId: st
     throw new Error('Only master admins can create client users')
   }
 
-  // Create auth user
-  const { data: authData, error: authError } = await supabase.auth.signUp({
+  // Create auth user using the admin API to avoid client signup rate limits
+  const { data: authData, error: authError } = await supabase.auth.admin.createUser({
     email: input.email,
     password: input.password,
+    email_confirm: true,
   })
 
   if (authError) {
@@ -106,20 +108,34 @@ export async function signupClientUser(input: CreateClientUserInput, adminId: st
 
   try {
     // Create tenant
-    const { data: tenantData, error: tenantError } = await supabase
-      .from('tenants')
-      .insert({
-        name: input.tenant_name,
-        slug: input.tenant_slug,
-        email: input.email,
-        created_by: adminId,
-        is_active: true,
-      })
-      .select('id')
-      .single()
+    let tenantSlug = input.tenant_slug
+    let tenantData: { id: string; slug: string } | null = null
 
-    if (tenantError) {
-      throw new Error(`Failed to create tenant: ${tenantError.message}`)
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      const result = await supabase
+        .from('tenants')
+        .insert({
+          name: input.tenant_name,
+          slug: tenantSlug,
+          email: input.email,
+          created_by: adminId,
+          is_active: true,
+        })
+        .select('id, slug')
+        .single()
+
+      if (!result.error) {
+        tenantData = result.data
+        break
+      }
+
+      const message = result.error.message || ''
+      if (message.includes('duplicate key value') && attempt < 2) {
+        tenantSlug = `${input.tenant_slug}-${Math.random().toString(36).slice(2, 8)}`.slice(0, 50)
+        continue
+      }
+
+      throw new Error(`Failed to create tenant: ${result.error.message}`)
     }
 
     if (!tenantData?.id) {
@@ -160,6 +176,45 @@ export async function signupClientUser(input: CreateClientUserInput, adminId: st
     await supabase.auth.admin.deleteUser(authData.user.id)
     throw error
   }
+}
+
+/**
+ * Generate a safe tenant slug from an email address.
+ * If a slug collision is possible, append a compact random suffix.
+ */
+function generateTenantSlug(email: string) {
+  const baseSlug = email
+    .split('@')[0]
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .replace(/-+/g, '-')
+    .slice(0, 40)
+
+  const uniqueSuffix = Math.random().toString(36).substring(2, 7)
+  const slug = `${baseSlug || 'cliente'}-${uniqueSuffix}`.slice(0, 50)
+
+  return slug
+}
+
+/**
+ * Sign up a new client user with minimal inputs.
+ * Uses email and password only and generates a tenant slug automatically.
+ */
+export async function signupClientUserSimple(input: { email: string; password: string }, adminId: string) {
+  const defaultName = input.email.split('@')[0].replace(/[^a-zA-Z0-9 ]+/g, ' ').trim() || 'Cliente'
+  const tenantSlug = generateTenantSlug(input.email)
+
+  return signupClientUser(
+    {
+      email: input.email,
+      password: input.password,
+      full_name: defaultName,
+      tenant_name: defaultName,
+      tenant_slug: tenantSlug,
+    },
+    adminId
+  )
 }
 
 /**
