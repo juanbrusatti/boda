@@ -82,7 +82,7 @@ export default function AdminDashboard() {
             cursor: 'pointer',
           }}
         >
-          Logout
+          Cerrar sesión
         </button>
       </div>
 
@@ -94,34 +94,34 @@ export default function AdminDashboard() {
           marginBottom: '20px',
         }}
       >
-        <h2>Welcome, {user.full_name}!</h2>
+        <h2>Bienvenido, {user.full_name}!</h2>
         <p>Email: {user.email}</p>
         <p>Role: Master Admin</p>
-        <p>Last Login: {user.last_login ? new Date(user.last_login).toLocaleString() : 'First login'}</p>
+        <p>Ultimo ingreso: {user.last_login ? new Date(user.last_login).toLocaleString() : 'First login'}</p>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
         <Card
-          title="Manage Users"
-          description="Create, edit, and manage client users"
+          title="Administrar usuarios"
+          description="Crear, editar, y eliminar usuarios"
           icon="👥"
           href="/admin/users"
         />
         <Card
-          title="View Audit Logs"
-          description="Track all admin actions"
+          title="Ver Registros de Auditoría"
+          description="Rastrear todas las acciones del administrador y clientes"
           icon="📋"
           href="/admin/audit-logs"
         />
         <Card
-          title="Manage Tenants"
-          description="View and manage client organizations"
+          title="Administrar Locales"
+          description="Ver y gestionar organizaciones clientes"
           icon="🏢"
           href="/admin/tenants"
         />
         <Card
-          title="System Settings"
-          description="Configure system-wide settings"
+          title="Configuración del sistema"
+          description="Configuraciones globales y ajustes de la plataforma"
           icon="⚙️"
           href="/admin/settings"
         />
@@ -136,11 +136,11 @@ export default function AdminDashboard() {
           borderRadius: '4px',
         }}
       >
-        <h3>📝 Next Steps</h3>
+        <h3>📝 Próximos Pasos</h3>
         <ul>
-          <li>Create your first client user</li>
-          <li>Configure permissions for the client</li>
-          <li>Monitor user activity in audit logs</li>
+          <li>Crear tu primer usuario cliente</li>
+          <li>Configurar permisos para el cliente</li>
+          <li>Monitorear la actividad del usuario en los registros de auditoría</li>
         </ul>
       </div>
     </div>
