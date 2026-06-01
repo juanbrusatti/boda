@@ -26,7 +26,7 @@ export default function ClientDashboardPage() {
     )
   }
 
-  if (isLoading || !user) {
+  if (isLoading || !user || !isClientUser()) {
     return (
       <div style={{ padding: '24px', textAlign: 'center' }}>
         <p>Cargando...</p>

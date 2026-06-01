@@ -32,12 +32,11 @@ export async function createServerSupabaseClient() {
 }
 
 export function createServerSupabaseAdminClient() {
-  const serviceRoleKey =
-    process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
   if (!serviceRoleKey) {
     throw new Error(
-      'Missing SUPABASE_SERVICE_ROLE_KEY environment variable. Set either SUPABASE_SERVICE_ROLE_KEY or NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY in .env.local.'
+      'Missing SUPABASE_SERVICE_ROLE_KEY environment variable. The service role key must remain private and must NOT be exposed as NEXT_PUBLIC_.'
     )
   }
 
