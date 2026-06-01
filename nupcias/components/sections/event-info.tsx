@@ -1,0 +1,50 @@
+import { CalendarDays, Clock, MapPin, Sparkles } from 'lucide-react'
+import { Reveal } from '@/components/reveal'
+import type { EventConfig } from '@/types/event'
+
+interface EventInfoProps {
+  event: EventConfig
+}
+
+const icons = [CalendarDays, Clock, MapPin, Sparkles]
+
+export function EventInfo({ event }: EventInfoProps) {
+  return (
+    <section id="evento" className="bg-secondary py-24 md:py-36">
+      <div className="mx-auto max-w-6xl px-6">
+        <Reveal className="text-center">
+          <p className="text-xs font-light uppercase tracking-[0.4em] text-muted-foreground">
+            Detalles del evento
+          </p>
+          <h2 className="mt-5 text-balance font-serif text-4xl font-light tracking-tight text-foreground md:text-5xl">
+            Todo lo que necesitás saber
+          </h2>
+        </Reveal>
+
+        <div className="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {event.details.map((detail, i) => {
+            const Icon = icons[i % icons.length]
+            return (
+              <Reveal key={detail.label} delay={i * 100}>
+                <div className="group flex h-full flex-col items-center rounded-md border border-border bg-card px-6 py-10 text-center transition-all duration-500 hover:-translate-y-1 hover:border-accent hover:shadow-lg hover:shadow-accent/10">
+                  <span className="flex size-14 items-center justify-center rounded-full border border-border text-accent transition-colors duration-500 group-hover:border-accent group-hover:bg-accent group-hover:text-accent-foreground">
+                    <Icon className="size-5" strokeWidth={1.5} />
+                  </span>
+                  <p className="mt-6 text-[10px] font-light uppercase tracking-[0.3em] text-muted-foreground">
+                    {detail.label}
+                  </p>
+                  <p className="mt-3 font-serif text-2xl font-light leading-tight text-foreground">
+                    {detail.value}
+                  </p>
+                  {detail.caption ? (
+                    <p className="mt-2 text-sm font-light text-muted-foreground">{detail.caption}</p>
+                  ) : null}
+                </div>
+              </Reveal>
+            )
+          })}
+        </div>
+      </div>
+    </section>
+  )
+}
