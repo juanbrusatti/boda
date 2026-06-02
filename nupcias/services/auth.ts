@@ -223,21 +223,18 @@ export async function signupClientUserSimple(input: { email: string; password: s
 export async function getUserProfile(userId: string): Promise<User | null> {
   const supabase = await createServerSupabaseClient()
 
-  console.log('[getUserProfile] Fetching profile for user:', userId)
 
   const { data, error } = await supabase.from('users').select('*').eq('id', userId).single()
 
   if (error) {
     if (error.code === 'PGRST116') {
       // Not found
-      console.log('[getUserProfile] User not found')
       return null
     }
     console.error('[getUserProfile] Error:', error)
     throw new Error(`Failed to fetch user profile: ${error.message}`)
   }
 
-  console.log('[getUserProfile] Profile retrieved:', data)
   return data as User
 }
 
