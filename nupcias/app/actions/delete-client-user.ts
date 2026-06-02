@@ -54,21 +54,52 @@ export async function deleteClientUserAction(formData: FormData): Promise<Delete
     // Get user info before deletion for audit log
     const { data: userData } = await adminClient
       .from('users')
-      .select('tenant_id')
+      .select('tenant_id , role')
       .eq('id', userId)
       .single()
 
     // Delete user permissions
     if (userData?.tenant_id) {
-      await adminClient
+      const { error: permissionsError } = await adminClient
         .from('user_permissions')
         .delete()
         .eq('user_id', userId)
         .eq('tenant_id', userData.tenant_id)
+      
+      if (permissionsError) {
+        return {
+          success: false,
+          error: `Error al eliminar permisos: ${permissionsError.message}`,
+        }
+      }
     }
 
+    if (!userData) {
+      return {
+        success: false,
+        error: 'Usuario no encontrado',
+      }
+    }
+    if (userData.role !== UserRole.CLIENT_USER) {
+      return {
+        success: false,
+        error: 'No puedes eliminar un usuario que no es cliente.',
+      }
+    }
     // Delete tenant if exists
     if (userData?.tenant_id) {
+      // Check if other users share this tenant
+       const { count: otherUsersCount } = await adminClient
+       .from('users')
+       .select('*', { count: 'exact', head: true })
+       .eq('tenant_id', userData.tenant_id)
+       .neq('id', userId)
+
+       if (otherUsersCount && otherUsersCount > 0) {
+         // Don't delete tenant if shared - just unlink the user
+         // Or return an error requiring explicit tenant handling
+       } else {
+
       const { error: tenantError } = await adminClient
         .from('tenants')
         .delete()
@@ -81,6 +112,7 @@ export async function deleteClientUserAction(formData: FormData): Promise<Delete
         }
       }
     }
+  }
 
     // Delete user profile
     const { error: profileError } = await adminClient

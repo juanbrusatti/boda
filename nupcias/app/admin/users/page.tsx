@@ -23,6 +23,9 @@ interface ClientUser {
     slug: string
     is_active: boolean
   } | null
+  user_permissions: {
+    permissions: string[]
+  } | null
 }
 
 export default function AdminUsersPage() {
@@ -35,6 +38,9 @@ export default function AdminUsersPage() {
   const [isLoadingUsers, setIsLoadingUsers] = useState(false)
   const [editingUser, setEditingUser] = useState<ClientUser | null>(null)
   const [isDeletingUser, setIsDeletingUser] = useState<ClientUser | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [isEditSubmitting, setIsEditSubmitting] = useState(false)
   const [editFormError, setEditFormError] = useState<string | null>(null)
   const [editSuccessMessage, setEditSuccessMessage] = useState<string | null>(null)
   const [showPassword, setShowPassword] = useState(false);
@@ -99,6 +105,7 @@ const togglePassword = () => {
 
   async function handleEditSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    setIsEditSubmitting(true)
     setEditFormError(null)
     setEditSuccessMessage(null)
 
@@ -108,6 +115,7 @@ const togglePassword = () => {
 
       if (!result.success) {
         setEditFormError(result.error || 'No se pudo actualizar el usuario')
+        setIsEditSubmitting(false)
         return
       }
 
@@ -119,21 +127,32 @@ const togglePassword = () => {
       }, 2000)
     } catch (error) {
       setEditFormError(error instanceof Error ? error.message : 'Error desconocido')
+    } finally {
+      setIsEditSubmitting(false)
     }
   }
 
   async function handleDeleteUser(userId: string) {
-    const formData = new FormData()
-    formData.append('userId', userId)
+    setIsDeleting(true)
+    setDeleteError(null)
     
-    const result = await deleteClientUserAction(formData)
-    
-    if (result.success) {
-      setSuccessMessage('Usuario eliminado exitosamente')
-      loadUsers()
-      setIsDeletingUser(null)
-    } else {
-      setFormError(result.error || 'No se pudo eliminar el usuario')
+    try {
+      const formData = new FormData()
+      formData.append('userId', userId)
+      
+      const result = await deleteClientUserAction(formData)
+      
+      if (result.success) {
+        setSuccessMessage('Usuario eliminado exitosamente')
+        loadUsers()
+        setIsDeletingUser(null)
+      } else {
+        setDeleteError(result.error || 'No se pudo eliminar el usuario')
+      }
+    } catch (error) {
+      setDeleteError(error instanceof Error ? error.message : 'Error desconocido al eliminar usuario')
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -272,7 +291,10 @@ const togglePassword = () => {
                         Editar
                       </button>
                       <button
-                        onClick={() => setIsDeletingUser(clientUser)}
+                        onClick={() => {
+                          setIsDeletingUser(clientUser)
+                          setDeleteError(null)
+                        }}
                         style={{
                           padding: '6px 12px',
                           backgroundColor: '#ef4444',
@@ -361,7 +383,7 @@ const togglePassword = () => {
                         type="checkbox"
                         name="permissions"
                         value={permission}
-                        defaultChecked={true}
+                        defaultChecked={editingUser.user_permissions?.permissions?.includes(permission) ?? false}
                         style={{ width: '16px', height: '16px' }}
                       />
                       <span style={{ fontSize: '14px' }}>{permission}</span>
@@ -390,16 +412,18 @@ const togglePassword = () => {
                 </button>
                 <button
                   type="submit"
+                  disabled={isEditSubmitting}
                   style={{
                     padding: '10px 20px',
                     backgroundColor: '#2563eb',
                     color: 'white',
                     border: 'none',
                     borderRadius: '8px',
-                    cursor: 'pointer',
+                    cursor: isEditSubmitting ? 'not-allowed' : 'pointer',
+                    opacity: isEditSubmitting ? 0.6 : 1,
                   }}
                 >
-                  Guardar cambios
+                  {isEditSubmitting ? 'Guardando...' : 'Guardar cambios'}
                 </button>
               </div>
             </form>
@@ -444,32 +468,37 @@ const togglePassword = () => {
             <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '24px' }}>
               Esta acción no se puede deshacer. El usuario y todos sus datos serán eliminados permanentemente.
             </p>
+            {deleteError && <div style={{ ...errorBoxStyle, marginBottom: '16px' }}>❌ {deleteError}</div>}
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
               <button
                 onClick={() => setIsDeletingUser(null)}
+                disabled={isDeleting}
                 style={{
                   padding: '10px 20px',
                   backgroundColor: '#64748b',
                   color: 'white',
                   border: 'none',
                   borderRadius: '8px',
-                  cursor: 'pointer',
+                  cursor: isDeleting ? 'not-allowed' : 'pointer',
+                  opacity: isDeleting ? 0.6 : 1,
                 }}
               >
                 Cancelar
               </button>
               <button
                 onClick={() => handleDeleteUser(isDeletingUser.id)}
+                disabled={isDeleting}
                 style={{
                   padding: '10px 20px',
                   backgroundColor: '#dc2626',
                   color: 'white',
                   border: 'none',
                   borderRadius: '8px',
-                  cursor: 'pointer',
+                  cursor: isDeleting ? 'not-allowed' : 'pointer',
+                  opacity: isDeleting ? 0.6 : 1,
                 }}
               >
-                Eliminar
+                {isDeleting ? 'Eliminando...' : 'Eliminar'}
               </button>
             </div>
           </div>

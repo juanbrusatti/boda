@@ -21,6 +21,9 @@ export interface ListClientUsersActionResult {
         slug: string
         is_active: boolean
       } | null
+      user_permissions: {
+        permissions: string[]
+      } | null
     }>
     total: number
   }
@@ -57,10 +60,10 @@ export async function listClientUsersAction(): Promise<ListClientUsersActionResu
       }
     }
 
-    // List all client users using admin client
+    // List all client users using admin client with permissions
     const { data, error, count } = await adminClient
       .from('users')
-      .select('*, tenants(name, slug, is_active)', { count: 'exact' })
+      .select('*, tenants(name, slug, is_active), user_permissions(permissions)', { count: 'exact' })
       .eq('role', UserRole.CLIENT_USER)
       .order('created_at', { ascending: false })
 

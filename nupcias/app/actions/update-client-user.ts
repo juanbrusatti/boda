@@ -28,7 +28,8 @@ export async function updateClientUserAction(formData: FormData): Promise<Update
     const userId = formData.get('userId') as string
     const status = formData.get('status') as UserStatus
     const full_name = formData.get('full_name') as string
-    const permissionsStr = formData.get('permissions') as string
+    const permissionsValues = formData.getAll('permissions') as string[]
+    const permissionsStr = permissionsValues.length > 0 ? JSON.stringify(permissionsValues) : ''
 
     if (!userId) {
       return {
