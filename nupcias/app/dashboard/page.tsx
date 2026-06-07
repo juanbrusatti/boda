@@ -576,7 +576,7 @@ function EditView({
             <Button
               variant="outline"
               onClick={() => {
-                const newDetails = [...(data.details || []), { label: '', value: '', caption: '', icon: 'Calendario' }]
+                const newDetails = [...(data.details || []), { label: '', value: '', caption: '', icon: '' }]
                 onDataChange({ ...data, details: newDetails })
               }}
               className="w-full"
