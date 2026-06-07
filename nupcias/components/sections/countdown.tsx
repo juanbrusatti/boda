@@ -9,11 +9,11 @@ interface CountdownProps {
 }
 
 export function Countdown({ event }: CountdownProps) {
+  const timeLeft = useCountdown(event.dateISO)
+
   if (event.showCountdown === false) {
     return null
   }
-
-  const timeLeft = useCountdown(event.dateISO)
 
   const units = [
     { label: 'Días', value: timeLeft?.days },

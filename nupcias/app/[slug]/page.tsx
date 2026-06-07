@@ -20,7 +20,10 @@ export default async function PublicInvitationPage({ params }: PageProps) {
 
   const result = await getPublicEventConfigAction({ tenantSlug: slug })
 
-  if (!result.success || !result.data) {
+  if (!result.success) {
+    throw new Error(result.error || 'Failed to load public invitation')
+  }
+  if (!result.data) {
     notFound()
   }
 

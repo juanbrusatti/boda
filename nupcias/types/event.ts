@@ -89,4 +89,9 @@ export interface EventConfigDB {
   is_published: boolean
   created_at: string
   updated_at: string
+  /** Joined tenant data from queries */
+  tenants: {
+    slug: string
+    is_active?: boolean
+  }
 }

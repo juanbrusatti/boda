@@ -20,6 +20,11 @@ CREATE INDEX IF NOT EXISTS idx_event_configs_tenant_id ON event_configs(tenant_i
 CREATE INDEX IF NOT EXISTS idx_event_configs_user_id ON event_configs(user_id);
 CREATE INDEX IF NOT EXISTS idx_event_configs_template_id ON event_configs(template_id);
 
+-- Ensure at most one published config per tenant
+CREATE UNIQUE INDEX IF NOT EXISTS uniq_event_configs_tenant_published
+  ON event_configs(tenant_id)
+  WHERE is_published = true;
+
 -- Enable Row Level Security
 ALTER TABLE event_configs ENABLE ROW LEVEL SECURITY;
 

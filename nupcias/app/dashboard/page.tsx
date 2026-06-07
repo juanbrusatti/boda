@@ -54,7 +54,7 @@ export default function ClientDashboardPage() {
           setEditedData(result.data.config)
           setIsPublished(result.data.is_published)
           // Extract tenant slug from the joined data
-          setTenantSlug((result.data as any).tenants?.slug || null)
+          setTenantSlug(result.data.tenants?.slug || null)
           setCurrentView('edit')
         }
       } catch (err) {
@@ -124,7 +124,7 @@ export default function ClientDashboardPage() {
         setSelectedTemplate(templateId)
         setEditedData({ ...template.data })
         setIsPublished(result.data?.is_published || false)
-        setTenantSlug((result.data as any)?.tenants?.slug || null)
+        setTenantSlug(result.data?.tenants?.slug || null)
         setCurrentView('edit')
       } else {
         setSaveError(result.error || 'Error al guardar el template')
@@ -231,10 +231,14 @@ export default function ClientDashboardPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => {
+                        onClick={async () => {
                           const url = `${window.location.origin}/${tenantSlug}`
-                          navigator.clipboard.writeText(url)
-                          alert('Enlace copiado al portapapeles')
+                          try {
+                            await navigator.clipboard.writeText(url)
+                            alert('Enlace copiado al portapapeles')
+                          } catch {
+                            setSaveError('No se pudo copiar el enlace')
+                          }
                         }}
                         className="h-7"
                       >
@@ -520,7 +524,10 @@ function EditView({
                 id="dateISO"
                 type="datetime-local"
                 value={data.dateISO ? data.dateISO.slice(0, 16) : ''}
-                onChange={(e) => onDataChange({ ...data, dateISO: e.target.value + ':00' })}
+                onChange={(e) => {
+                  const value = e.target.value
+                  onDataChange({ ...data, dateISO: value ? `${value}:00` : '' })
+                }}
               />
             </div>
           </CardContent>

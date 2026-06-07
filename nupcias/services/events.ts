@@ -20,52 +20,20 @@ export async function saveEventConfig(
 ): Promise<EventConfigDB> {
   const supabase = await createServerSupabaseClient()
 
-  // Check if user already has an event configuration
-  const { data: existingConfig, error: fetchError } = await supabase
+  const { data, error } = await supabase
     .from('event_configs')
-    .select('*')
-    .eq('user_id', userId)
-    .eq('tenant_id', tenantId)
-    .single()
-
-  if (fetchError && fetchError.code !== 'PGRST116') {
-    // PGRST116 means not found, which is expected for new configs
-    throw new Error(`Failed to check existing config: ${fetchError.message}`)
-  }
-
-  if (existingConfig) {
-    // Update existing configuration
-    const { data, error } = await supabase
-      .from('event_configs')
-      .update({
+    .upsert(
+      {
+        tenant_id: tenantId,
+        user_id: userId,
         template_id: templateId,
         config,
         updated_at: new Date().toISOString(),
-      })
-      .eq('id', existingConfig.id)
-      .select(`
-        *,
-        tenants!inner(slug)
-      `)
-      .single()
-
-    if (error) {
-      throw new Error(`Failed to update event config: ${error.message}`)
-    }
-
-    return data as EventConfigDB
-  }
-
-  // Create new configuration
-  const { data, error } = await supabase
-    .from('event_configs')
-    .insert({
-      tenant_id: tenantId,
-      user_id: userId,
-      template_id: templateId,
-      config,
-      is_published: false,
-    })
+      },
+      {
+        onConflict: 'user_id,tenant_id',
+      }
+    )
     .select(`
       *,
       tenants!inner(slug)
@@ -73,7 +41,7 @@ export async function saveEventConfig(
     .single()
 
   if (error) {
-    throw new Error(`Failed to create event config: ${error.message}`)
+    throw new Error(`Failed to save event config: ${error.message}`)
   }
 
   return data as EventConfigDB
