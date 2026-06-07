@@ -7,6 +7,7 @@ export interface EventDetail {
   label: string
   value: string
   caption?: string
+  icon?: string
 }
 
 export interface StoryParagraph {
@@ -31,6 +32,12 @@ export interface EventConfig {
   dateLabel: string
   /** ISO date string used by the countdown, e.g. "2027-02-20T19:00:00" */
   dateISO: string
+  /** Whether to show the countdown section */
+  showCountdown: boolean
+  /** Countdown section title */
+  countdownTitle: string
+  /** Countdown section subtitle */
+  countdownSubtitle: string
   /** Short location label for the hero */
   locationLabel: string
   /** Longer marketing/intro description */
@@ -61,5 +68,30 @@ export interface EventConfig {
   brand: {
     name: string
     tagline: string
+  }
+}
+
+/**
+ * Event configuration stored in the database for a client user
+ * Links a tenant/user to their selected template and customized event data
+ */
+export interface EventConfigDB {
+  id: string
+  /** The tenant this event belongs to */
+  tenant_id: string
+  /** The user who owns this event configuration */
+  user_id: string
+  /** The template ID that was selected */
+  template_id: string
+  /** The customized event configuration data */
+  config: EventConfig
+  /** Whether the event is published/visible to guests */
+  is_published: boolean
+  created_at: string
+  updated_at: string
+  /** Joined tenant data from queries */
+  tenants: {
+    slug: string
+    is_active?: boolean
   }
 }

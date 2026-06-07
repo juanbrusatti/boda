@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import { templates } from '@/data/templates'
@@ -10,9 +10,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Sparkles, Edit, Users, LogOut, ArrowLeft } from 'lucide-react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Sparkles, Edit, Users, LogOut, ArrowLeft, Eye, Loader2, Share2, Globe, Lock, Plus, Trash } from 'lucide-react'
+import { availableIcons } from '@/lib/icons'
+import { Hero } from '@/components/sections/hero'
+import { EventInfo } from '@/components/sections/event-info'
+import { Countdown } from '@/components/sections/countdown'
+import { Story } from '@/components/sections/story'
+import { Gallery } from '@/components/sections/gallery'
+import { Location } from '@/components/sections/location'
 import type { Template } from '@/data/templates'
 import type { EventConfig } from '@/types/event'
+import { getEventConfigAction, saveEventConfigAction, hasEventConfigAction, setEventPublishedAction } from '@/app/actions/event-config'
+import type { EventConfigDB } from '@/types/event'
 
 type DashboardView = 'templates' | 'edit' | 'rsvp'
 
@@ -22,6 +32,44 @@ export default function ClientDashboardPage() {
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null)
   const [currentView, setCurrentView] = useState<DashboardView>('templates')
   const [editedData, setEditedData] = useState<any>(null)
+  const [loadingConfig, setLoadingConfig] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
+  const [isPublished, setIsPublished] = useState(false)
+  const [tenantSlug, setTenantSlug] = useState<string | null>(null)
+
+  // Load existing event configuration on mount
+  useEffect(() => {
+    async function loadConfig() {
+      if (!user || !user.tenant_id) return
+
+      try {
+        const result = await getEventConfigAction({
+          userId: user.id,
+          tenantId: user.tenant_id,
+        })
+
+        if (result.success && result.data) {
+          setSelectedTemplate(result.data.template_id)
+          setEditedData(result.data.config)
+          setIsPublished(result.data.is_published)
+          // Extract tenant slug from the joined data
+          setTenantSlug(result.data.tenants?.slug || null)
+          setCurrentView('edit')
+        }
+      } catch (err) {
+        console.error('Failed to load event config:', err)
+      } finally {
+        setLoadingConfig(false)
+      }
+    }
+
+    if (user && user.tenant_id) {
+      loadConfig()
+    } else {
+      setLoadingConfig(false)
+    }
+  }, [user])
 
   if (error) {
     return (
@@ -49,12 +97,43 @@ export default function ClientDashboardPage() {
     )
   }
 
-  const handleSelectTemplate = (templateId: string) => {
+  if (loadingConfig) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
+
+  const handleSelectTemplate = async (templateId: string) => {
     const template = templates.find(t => t.id === templateId)
-    if (template) {
-      setSelectedTemplate(templateId)
-      setEditedData({ ...template.data })
-      setCurrentView('edit')
+    if (!template || !user.tenant_id) return
+
+    setSaving(true)
+    setSaveError(null)
+
+    try {
+      const result = await saveEventConfigAction({
+        userId: user.id,
+        tenantId: user.tenant_id,
+        templateId: templateId,
+        config: template.data,
+      })
+
+      if (result.success) {
+        setSelectedTemplate(templateId)
+        setEditedData({ ...template.data })
+        setIsPublished(result.data?.is_published || false)
+        setTenantSlug(result.data?.tenants?.slug || null)
+        setCurrentView('edit')
+      } else {
+        setSaveError(result.error || 'Error al guardar el template')
+      }
+    } catch (err) {
+      setSaveError('Error al guardar el template')
+      console.error('Failed to save template:', err)
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -62,6 +141,60 @@ export default function ClientDashboardPage() {
     setCurrentView('templates')
     setSelectedTemplate(null)
     setEditedData(null)
+  }
+
+  const handleSaveChanges = async () => {
+    if (!selectedTemplate || !editedData || !user.tenant_id) return
+
+    setSaving(true)
+    setSaveError(null)
+
+    try {
+      const result = await saveEventConfigAction({
+        userId: user.id,
+        tenantId: user.tenant_id,
+        templateId: selectedTemplate,
+        config: editedData,
+      })
+
+      if (result.success) {
+        alert('Cambios guardados exitosamente')
+      } else {
+        setSaveError(result.error || 'Error al guardar los cambios')
+      }
+    } catch (err) {
+      setSaveError('Error al guardar los cambios')
+      console.error('Failed to save changes:', err)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleTogglePublish = async () => {
+    if (!user.tenant_id) return
+
+    setSaving(true)
+    setSaveError(null)
+
+    try {
+      const result = await setEventPublishedAction({
+        userId: user.id,
+        tenantId: user.tenant_id,
+        isPublished: !isPublished,
+      })
+
+      if (result.success) {
+        setIsPublished(!isPublished)
+        alert(isPublished ? 'Invitación despublicada' : 'Invitación publicada exitosamente')
+      } else {
+        setSaveError(result.error || 'Error al cambiar el estado de publicación')
+      }
+    } catch (err) {
+      setSaveError('Error al cambiar el estado de publicación')
+      console.error('Failed to toggle publish:', err)
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -74,10 +207,72 @@ export default function ClientDashboardPage() {
               Bienvenido, {user.full_name || user.email}
             </p>
           </div>
-          <Button variant="outline" onClick={logout}>
-            <LogOut className="mr-2 h-4 w-4" />
-            Cerrar sesión
-          </Button>
+          <div className="flex items-center gap-3">
+            {selectedTemplate && tenantSlug && (
+              <Card className="px-4 py-2">
+                <CardContent className="p-0 flex items-center gap-3">
+                  {isPublished ? (
+                    <>
+                      <Globe className="h-4 w-4 text-green-600" />
+                      <span className="text-sm text-green-600 font-medium">Publicado</span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleTogglePublish}
+                        disabled={saving}
+                        className="h-7 px-2"
+                      >
+                        {saving ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <Lock className="h-3 w-3" />
+                        )}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={async () => {
+                          const url = `${window.location.origin}/${tenantSlug}`
+                          try {
+                            await navigator.clipboard.writeText(url)
+                            alert('Enlace copiado al portapapeles')
+                          } catch {
+                            setSaveError('No se pudo copiar el enlace')
+                          }
+                        }}
+                        className="h-7"
+                      >
+                        <Share2 className="h-3 w-3 mr-1" />
+                        Compartir
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">Borrador</span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleTogglePublish}
+                        disabled={saving}
+                        className="h-7 px-2"
+                      >
+                        {saving ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <Globe className="h-3 w-3" />
+                        )}
+                      </Button>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+            <Button variant="outline" onClick={logout}>
+              <LogOut className="mr-2 h-4 w-4" />
+              Cerrar sesión
+            </Button>
+          </div>
         </header>
 
         <Tabs value={currentView} onValueChange={(v) => setCurrentView(v as DashboardView)}>
@@ -119,6 +314,9 @@ export default function ClientDashboardPage() {
                     data={editedData}
                     onDataChange={setEditedData}
                     onBack={handleBackToTemplates}
+                    onSave={handleSaveChanges}
+                    saving={saving}
+                    saveError={saveError}
                   />
                 )
               })() 
@@ -159,7 +357,7 @@ function TemplatesView({ onSelectTemplate }: { onSelectTemplate: (id: string) =>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {templates.map((template) => (
-          <Card key={template.id} className="group hover:shadow-lg transition-all cursor-pointer">
+          <Card key={template.id} className="group hover:shadow-lg transition-all">
             <CardHeader>
               <div className="aspect-video bg-muted rounded-lg mb-4 overflow-hidden">
                 <img
@@ -171,7 +369,21 @@ function TemplatesView({ onSelectTemplate }: { onSelectTemplate: (id: string) =>
               <CardTitle>{template.name}</CardTitle>
               <CardDescription>{template.description}</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-3">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="w-full">
+                    <Eye className="mr-2 h-4 w-4" />
+                    Vista previa
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Vista previa: {template.name}</DialogTitle>
+                  </DialogHeader>
+                  <TemplatePreview template={template} />
+                </DialogContent>
+              </Dialog>
               <Button onClick={() => onSelectTemplate(template.id)} className="w-full">
                 <Sparkles className="mr-2 h-4 w-4" />
                 Usar este template
@@ -189,17 +401,18 @@ function EditView({
   data,
   onDataChange,
   onBack,
+  onSave,
+  saving,
+  saveError,
 }: {
   template: Template
   data: EventConfig
   onDataChange: (data: EventConfig) => void
   onBack: () => void
+  onSave: () => void
+  saving: boolean
+  saveError: string | null
 }) {
-  const handleSave = () => {
-    console.log('Guardando cambios:', data)
-    alert('Cambios guardados (funcionalidad de guardado pendiente)')
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -212,11 +425,24 @@ function EditView({
             <ArrowLeft className="mr-2 h-4 w-4" />
             Volver
           </Button>
-          <Button onClick={handleSave}>
-            Guardar cambios
+          <Button onClick={onSave} disabled={saving}>
+            {saving ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Guardando...
+              </>
+            ) : (
+              'Guardar cambios'
+            )}
           </Button>
         </div>
       </div>
+
+      {saveError && (
+        <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-md">
+          {saveError}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
@@ -261,6 +487,54 @@ function EditView({
 
         <Card>
           <CardHeader>
+            <CardTitle>Cuenta regresiva</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="showCountdown">Mostrar cuenta regresiva</Label>
+              <input
+                type="checkbox"
+                id="showCountdown"
+                checked={data.showCountdown !== false}
+                onChange={(e) => onDataChange({ ...data, showCountdown: e.target.checked })}
+                className="h-4 w-4"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="countdownTitle">Título</Label>
+              <Input
+                id="countdownTitle"
+                value={data.countdownTitle || ''}
+                onChange={(e) => onDataChange({ ...data, countdownTitle: e.target.value })}
+                placeholder="Cuenta regresiva"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="countdownSubtitle">Subtítulo</Label>
+              <Input
+                id="countdownSubtitle"
+                value={data.countdownSubtitle || ''}
+                onChange={(e) => onDataChange({ ...data, countdownSubtitle: e.target.value })}
+                placeholder="Falta cada vez menos"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="dateISO">Fecha y hora (ISO)</Label>
+              <Input
+                id="dateISO"
+                type="datetime-local"
+                value={data.dateISO ? data.dateISO.slice(0, 16) : ''}
+                onChange={(e) => {
+                  const value = e.target.value
+                  onDataChange({ ...data, dateISO: value ? `${value}:00` : '' })
+                }}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
             <CardTitle>Descripción</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -282,7 +556,7 @@ function EditView({
           </CardHeader>
           <CardContent className="space-y-4">
             {data.details?.map((detail: any, index: number) => (
-              <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-muted rounded-lg">
+              <div key={index} className="grid grid-cols-1 md:grid-cols-5 gap-4 p-4 bg-muted rounded-lg">
                 <div className="space-y-2">
                   <Label>Etiqueta</Label>
                   <Input
@@ -316,8 +590,52 @@ function EditView({
                     }}
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label>Icono</Label>
+                  <select
+                    value={detail.icon || ''}
+                    onChange={(e) => {
+                      const newDetails = [...data.details]
+                      newDetails[index] = { ...newDetails[index], icon: e.target.value }
+                      onDataChange({ ...data, details: newDetails })
+                    }}
+                    className="w-full h-10 px-3 py-2 rounded-md border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  >
+                    <option value="">Sin icono</option>
+                    {availableIcons.map((icon) => (
+                      <option key={icon.name} value={icon.name}>
+                        {icon.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Acciones</Label>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => {
+                      const newDetails = data.details.filter((_: any, i: number) => i !== index)
+                      onDataChange({ ...data, details: newDetails })
+                    }}
+                    className="w-full hover:bg-destructive/60"
+                  >
+                    <Trash className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             ))}
+            <Button
+              variant="outline"
+              onClick={() => {
+                const newDetails = [...(data.details || []), { label: '', value: '', caption: '', icon: '' }]
+                onDataChange({ ...data, details: newDetails })
+              }}
+              className="w-full"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Agregar detalle
+            </Button>
           </CardContent>
         </Card>
 
@@ -386,6 +704,19 @@ function RSVPView() {
           </p>
         </CardContent>
       </Card>
+    </div>
+  )
+}
+
+function TemplatePreview({ template }: { template: Template }) {
+  return (
+    <div className="space-y-0">
+      <Hero event={template.data} />
+      <EventInfo event={template.data} />
+      <Countdown event={template.data} />
+      <Story event={template.data} />
+      <Gallery event={template.data} />
+      <Location event={template.data} />
     </div>
   )
 }
