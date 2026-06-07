@@ -1,12 +1,13 @@
-import { CalendarDays, Clock, MapPin, Sparkles } from 'lucide-react'
+import { CalendarDays, Clock, MapPin, Sparkles, type LucideIcon } from 'lucide-react'
 import { Reveal } from '@/components/reveal'
 import type { EventConfig } from '@/types/event'
+import { iconMap } from '@/lib/icons'
 
 interface EventInfoProps {
   event: EventConfig
 }
 
-const icons = [CalendarDays, Clock, MapPin, Sparkles]
+const defaultIcons = [CalendarDays, Clock, MapPin, Sparkles]
 
 export function EventInfo({ event }: EventInfoProps) {
   return (
@@ -23,7 +24,7 @@ export function EventInfo({ event }: EventInfoProps) {
 
         <div className="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {event.details.map((detail, i) => {
-            const Icon = icons[i % icons.length]
+            const Icon = detail.icon && iconMap[detail.icon] ? iconMap[detail.icon] : defaultIcons[i % defaultIcons.length]
             return (
               <Reveal key={detail.label} delay={i * 100}>
                 <div className="group flex h-full flex-col items-center rounded-md border border-border bg-card px-6 py-10 text-center transition-all duration-500 hover:-translate-y-1 hover:border-accent hover:shadow-lg hover:shadow-accent/10">

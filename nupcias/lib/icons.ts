@@ -1,0 +1,41 @@
+import { Calendar, Clock, MapPin, Shirt, Phone, Mail, Music, Camera, Gift, Utensils, Car, Coffee, Wine, Heart, Star, CheckCircle, AlertCircle, type LucideIcon } from 'lucide-react'
+
+export const availableIcons: { name: string; icon: LucideIcon }[] = [
+  { name: 'Calendario', icon: Calendar },
+  { name: 'Reloj', icon: Clock },
+  { name: 'Ubicación', icon: MapPin },
+  { name: 'Vestimenta', icon: Shirt },
+  { name: 'Teléfono', icon: Phone },
+  { name: 'Email', icon: Mail },
+  { name: 'Música', icon: Music },
+  { name: 'Cámara', icon: Camera },
+  { name: 'Regalo', icon: Gift },
+  { name: 'Comida', icon: Utensils },
+  { name: 'Auto', icon: Car },
+  { name: 'Café', icon: Coffee },
+  { name: 'Vino', icon: Wine },
+  { name: 'Corazón', icon: Heart },
+  { name: 'Estrella', icon: Star },
+  { name: 'Check', icon: CheckCircle },
+  { name: 'Alerta', icon: AlertCircle },
+]
+
+export const iconMap: Record<string, LucideIcon> = {
+  Calendario: Calendar,
+  Reloj: Clock,
+  Ubicación: MapPin,
+  Vestimenta: Shirt,
+  Teléfono: Phone,
+  Email: Mail,
+  Música: Music,
+  Cámara: Camera,
+  Regalo: Gift,
+  Comida: Utensils,
+  Auto: Car,
+  Café: Coffee,
+  Vino: Wine,
+  Corazón: Heart,
+  Estrella: Star,
+  Check: CheckCircle,
+  Alerta: AlertCircle,
+}

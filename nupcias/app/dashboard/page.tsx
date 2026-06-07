@@ -11,7 +11,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Sparkles, Edit, Users, LogOut, ArrowLeft, Eye, Loader2, Share2, Globe, Lock } from 'lucide-react'
+import { Sparkles, Edit, Users, LogOut, ArrowLeft, Eye, Loader2, Share2, Globe, Lock, Plus, Trash } from 'lucide-react'
+import { availableIcons } from '@/lib/icons'
 import { Hero } from '@/components/sections/hero'
 import { EventInfo } from '@/components/sections/event-info'
 import { Countdown } from '@/components/sections/countdown'
@@ -503,7 +504,7 @@ function EditView({
           </CardHeader>
           <CardContent className="space-y-4">
             {data.details?.map((detail: any, index: number) => (
-              <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-muted rounded-lg">
+              <div key={index} className="grid grid-cols-1 md:grid-cols-5 gap-4 p-4 bg-muted rounded-lg">
                 <div className="space-y-2">
                   <Label>Etiqueta</Label>
                   <Input
@@ -537,8 +538,52 @@ function EditView({
                     }}
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label>Icono</Label>
+                  <select
+                    value={detail.icon || ''}
+                    onChange={(e) => {
+                      const newDetails = [...data.details]
+                      newDetails[index] = { ...newDetails[index], icon: e.target.value }
+                      onDataChange({ ...data, details: newDetails })
+                    }}
+                    className="w-full h-10 px-3 py-2 rounded-md border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  >
+                    <option value="">Sin icono</option>
+                    {availableIcons.map((icon) => (
+                      <option key={icon.name} value={icon.name}>
+                        {icon.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Acciones</Label>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => {
+                      const newDetails = data.details.filter((_: any, i: number) => i !== index)
+                      onDataChange({ ...data, details: newDetails })
+                    }}
+                    className="w-full hover:bg-destructive/60"
+                  >
+                    <Trash className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             ))}
+            <Button
+              variant="outline"
+              onClick={() => {
+                const newDetails = [...(data.details || []), { label: '', value: '', caption: '', icon: 'Calendario' }]
+                onDataChange({ ...data, details: newDetails })
+              }}
+              className="w-full"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Agregar detalle
+            </Button>
           </CardContent>
         </Card>
 

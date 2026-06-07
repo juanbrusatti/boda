@@ -7,6 +7,7 @@ export interface EventDetail {
   label: string
   value: string
   caption?: string
+  icon?: string
 }
 
 export interface StoryParagraph {
