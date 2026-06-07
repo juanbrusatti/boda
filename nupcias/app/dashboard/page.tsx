@@ -10,7 +10,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Sparkles, Edit, Users, LogOut, ArrowLeft } from 'lucide-react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Sparkles, Edit, Users, LogOut, ArrowLeft, Eye } from 'lucide-react'
+import { Hero } from '@/components/sections/hero'
+import { EventInfo } from '@/components/sections/event-info'
+import { Countdown } from '@/components/sections/countdown'
+import { Story } from '@/components/sections/story'
+import { Gallery } from '@/components/sections/gallery'
+import { Location } from '@/components/sections/location'
 import type { Template } from '@/data/templates'
 import type { EventConfig } from '@/types/event'
 
@@ -159,7 +166,7 @@ function TemplatesView({ onSelectTemplate }: { onSelectTemplate: (id: string) =>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {templates.map((template) => (
-          <Card key={template.id} className="group hover:shadow-lg transition-all cursor-pointer">
+          <Card key={template.id} className="group hover:shadow-lg transition-all">
             <CardHeader>
               <div className="aspect-video bg-muted rounded-lg mb-4 overflow-hidden">
                 <img
@@ -171,7 +178,21 @@ function TemplatesView({ onSelectTemplate }: { onSelectTemplate: (id: string) =>
               <CardTitle>{template.name}</CardTitle>
               <CardDescription>{template.description}</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-3">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="w-full">
+                    <Eye className="mr-2 h-4 w-4" />
+                    Vista previa
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Vista previa: {template.name}</DialogTitle>
+                  </DialogHeader>
+                  <TemplatePreview template={template} />
+                </DialogContent>
+              </Dialog>
               <Button onClick={() => onSelectTemplate(template.id)} className="w-full">
                 <Sparkles className="mr-2 h-4 w-4" />
                 Usar este template
@@ -386,6 +407,19 @@ function RSVPView() {
           </p>
         </CardContent>
       </Card>
+    </div>
+  )
+}
+
+function TemplatePreview({ template }: { template: Template }) {
+  return (
+    <div className="space-y-0">
+      <Hero event={template.data} />
+      <EventInfo event={template.data} />
+      <Countdown event={template.data} />
+      <Story event={template.data} />
+      <Gallery event={template.data} />
+      <Location event={template.data} />
     </div>
   )
 }
