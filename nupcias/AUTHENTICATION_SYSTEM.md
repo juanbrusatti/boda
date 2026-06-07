@@ -84,7 +84,12 @@ Verificar que estas variables estén en `.env.local`:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ```
+
+`SUPABASE_SERVICE_ROLE_KEY` se usa para operaciones de administración que necesitan pasar las políticas RLS, como crear perfiles de usuario en la tabla `users`.
+
+IMPORTANTE: Nunca use `NEXT_PUBLIC_` para la clave de servicio. Variables con el prefijo `NEXT_PUBLIC_` se exponen al código del cliente y podrían filtrar la clave administrativa al navegador. Asegúrate de definir solo `SUPABASE_SERVICE_ROLE_KEY` en el servidor y no incluirla en bundles públicos.
 
 ### 3. (Optional) Create Initial Master Admin
 
