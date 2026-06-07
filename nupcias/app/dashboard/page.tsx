@@ -483,6 +483,51 @@ function EditView({
 
         <Card>
           <CardHeader>
+            <CardTitle>Cuenta regresiva</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="showCountdown">Mostrar cuenta regresiva</Label>
+              <input
+                type="checkbox"
+                id="showCountdown"
+                checked={data.showCountdown !== false}
+                onChange={(e) => onDataChange({ ...data, showCountdown: e.target.checked })}
+                className="h-4 w-4"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="countdownTitle">Título</Label>
+              <Input
+                id="countdownTitle"
+                value={data.countdownTitle || ''}
+                onChange={(e) => onDataChange({ ...data, countdownTitle: e.target.value })}
+                placeholder="Cuenta regresiva"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="countdownSubtitle">Subtítulo</Label>
+              <Input
+                id="countdownSubtitle"
+                value={data.countdownSubtitle || ''}
+                onChange={(e) => onDataChange({ ...data, countdownSubtitle: e.target.value })}
+                placeholder="Falta cada vez menos"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="dateISO">Fecha y hora (ISO)</Label>
+              <Input
+                id="dateISO"
+                type="datetime-local"
+                value={data.dateISO ? data.dateISO.slice(0, 16) : ''}
+                onChange={(e) => onDataChange({ ...data, dateISO: e.target.value + ':00' })}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
             <CardTitle>Descripción</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">

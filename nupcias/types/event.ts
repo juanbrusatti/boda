@@ -32,6 +32,12 @@ export interface EventConfig {
   dateLabel: string
   /** ISO date string used by the countdown, e.g. "2027-02-20T19:00:00" */
   dateISO: string
+  /** Whether to show the countdown section */
+  showCountdown: boolean
+  /** Countdown section title */
+  countdownTitle: string
+  /** Countdown section subtitle */
+  countdownSubtitle: string
   /** Short location label for the hero */
   locationLabel: string
   /** Longer marketing/intro description */

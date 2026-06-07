@@ -13,6 +13,9 @@ export const event: EventConfig = {
   tagline: 'Nos casamos',
   dateLabel: '20 de Febrero, 2027',
   dateISO: '2027-02-20T19:00:00',
+  showCountdown: true,
+  countdownTitle: 'Cuenta regresiva',
+  countdownSubtitle: 'Falta cada vez menos',
   locationLabel: 'Salón Los Robles · Buenos Aires',
   description:
     'Con la bendición de nuestras familias, queremos celebrar el comienzo de nuestra historia rodeados de las personas que más amamos.',
