@@ -24,24 +24,57 @@ CREATE INDEX IF NOT EXISTS idx_event_configs_template_id ON event_configs(templa
 ALTER TABLE event_configs ENABLE ROW LEVEL SECURITY;
 
 -- Policy: Users can only see their own event config
+DROP POLICY IF EXISTS "Users can view own event config" ON event_configs;
 CREATE POLICY "Users can view own event config"
   ON event_configs FOR SELECT
-  USING (auth.uid() = user_id);
+  USING (
+    auth.uid() = user_id
+    AND tenant_id = (SELECT tenant_id FROM users WHERE id = auth.uid())
+  );
+
+-- Policy: Public can view published event configs
+DROP POLICY IF EXISTS "Public can view published event configs" ON event_configs;
+CREATE POLICY "Public can view published event configs"
+  ON event_configs FOR SELECT
+  USING (
+    is_published = true
+    AND EXISTS (
+      SELECT 1 FROM tenants
+      WHERE tenants.id = event_configs.tenant_id
+      AND tenants.is_active = true
+    )
+  );
 
 -- Policy: Users can insert their own event config
+DROP POLICY IF EXISTS "Users can insert own event config" ON event_configs;
 CREATE POLICY "Users can insert own event config"
   ON event_configs FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
+  WITH CHECK (
+    auth.uid() = user_id
+    AND tenant_id = (SELECT tenant_id FROM users WHERE id = auth.uid())
+  );
 
 -- Policy: Users can update their own event config
+DROP POLICY IF EXISTS "Users can update own event config" ON event_configs;
 CREATE POLICY "Users can update own event config"
   ON event_configs FOR UPDATE
-  USING (auth.uid() = user_id);
+  USING (
+    auth.uid() = user_id
+    AND tenant_id = (SELECT tenant_id FROM users WHERE id = auth.uid())
+  )
+  WITH CHECK (
+    auth.uid() = user_id
+    AND tenant_id = (SELECT tenant_id FROM users WHERE id = auth.uid())
+  );
 
 -- Policy: Users can delete their own event config
+DROP POLICY IF EXISTS "Users can delete own event config" ON event_configs;
 CREATE POLICY "Users can delete own event config"
   ON event_configs FOR DELETE
-  USING (auth.uid() = user_id);
+  USING (
+    auth.uid() = user_id
+    AND tenant_id = (SELECT tenant_id FROM users WHERE id = auth.uid())
+  );
 
 -- Function to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -53,6 +86,7 @@ END;
 $$ language 'plpgsql';
 
 -- Trigger to automatically update updated_at
+DROP TRIGGER IF EXISTS update_event_configs_updated_at ON event_configs;
 CREATE TRIGGER update_event_configs_updated_at
   BEFORE UPDATE ON event_configs
   FOR EACH ROW

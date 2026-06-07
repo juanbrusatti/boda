@@ -43,7 +43,10 @@ export async function saveEventConfig(
         updated_at: new Date().toISOString(),
       })
       .eq('id', existingConfig.id)
-      .select()
+      .select(`
+        *,
+        tenants!inner(slug)
+      `)
       .single()
 
     if (error) {
@@ -63,7 +66,10 @@ export async function saveEventConfig(
       config,
       is_published: false,
     })
-    .select()
+    .select(`
+      *,
+      tenants!inner(slug)
+    `)
     .single()
 
   if (error) {
@@ -145,20 +151,27 @@ export async function setEventPublished(
 ): Promise<void> {
   const supabase = await createServerSupabaseClient()
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('event_configs')
     .update({ is_published: isPublished, updated_at: new Date().toISOString() })
     .eq('user_id', userId)
     .eq('tenant_id', tenantId)
+    .select()
+    .single()
 
   if (error) {
     throw new Error(`Failed to update publish status: ${error.message}`)
+  }
+
+  if (!data) {
+    throw new Error('No event configuration found for user/tenant')
   }
 }
 
 /**
  * Get published event configuration by tenant slug (public access)
  * This is used for the public invitation page
+ * Note: The database should have a unique constraint on (tenant_id, user_id) to enforce at most one config per tenant
  */
 export async function getPublicEventConfig(tenantSlug: string): Promise<EventConfigDB | null> {
   const supabase = await createServerSupabaseClient()
@@ -172,15 +185,19 @@ export async function getPublicEventConfig(tenantSlug: string): Promise<EventCon
     .eq('tenants.slug', tenantSlug)
     .eq('tenants.is_active', true)
     .eq('is_published', true)
-    .single()
+    .limit(2)
 
   if (error) {
-    if (error.code === 'PGRST116') {
-      // Not found
-      return null
-    }
     throw new Error(`Failed to fetch public event config: ${error.message}`)
   }
 
-  return data as EventConfigDB
+  if (!data || data.length === 0) {
+    return null
+  }
+
+  if (data.length > 1) {
+    throw new Error('Multiple event configurations found for tenant - this violates the unique constraint')
+  }
+
+  return data[0] as EventConfigDB
 }

@@ -122,6 +122,8 @@ export default function ClientDashboardPage() {
       if (result.success) {
         setSelectedTemplate(templateId)
         setEditedData({ ...template.data })
+        setIsPublished(result.data?.is_published || false)
+        setTenantSlug((result.data as any)?.tenants?.slug || null)
         setCurrentView('edit')
       } else {
         setSaveError(result.error || 'Error al guardar el template')
