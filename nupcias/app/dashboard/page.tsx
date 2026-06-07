@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Sparkles, Edit, Users, LogOut, ArrowLeft, Eye, Loader2 } from 'lucide-react'
+import { Sparkles, Edit, Users, LogOut, ArrowLeft, Eye, Loader2, Share2, Globe, Lock } from 'lucide-react'
 import { Hero } from '@/components/sections/hero'
 import { EventInfo } from '@/components/sections/event-info'
 import { Countdown } from '@/components/sections/countdown'
@@ -20,7 +20,7 @@ import { Gallery } from '@/components/sections/gallery'
 import { Location } from '@/components/sections/location'
 import type { Template } from '@/data/templates'
 import type { EventConfig } from '@/types/event'
-import { getEventConfigAction, saveEventConfigAction, hasEventConfigAction } from '@/app/actions/event-config'
+import { getEventConfigAction, saveEventConfigAction, hasEventConfigAction, setEventPublishedAction } from '@/app/actions/event-config'
 import type { EventConfigDB } from '@/types/event'
 
 type DashboardView = 'templates' | 'edit' | 'rsvp'
@@ -34,6 +34,8 @@ export default function ClientDashboardPage() {
   const [loadingConfig, setLoadingConfig] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
+  const [isPublished, setIsPublished] = useState(false)
+  const [tenantSlug, setTenantSlug] = useState<string | null>(null)
 
   // Load existing event configuration on mount
   useEffect(() => {
@@ -49,6 +51,9 @@ export default function ClientDashboardPage() {
         if (result.success && result.data) {
           setSelectedTemplate(result.data.template_id)
           setEditedData(result.data.config)
+          setIsPublished(result.data.is_published)
+          // Extract tenant slug from the joined data
+          setTenantSlug((result.data as any).tenants?.slug || null)
           setCurrentView('edit')
         }
       } catch (err) {
@@ -162,6 +167,33 @@ export default function ClientDashboardPage() {
     }
   }
 
+  const handleTogglePublish = async () => {
+    if (!user.tenant_id) return
+
+    setSaving(true)
+    setSaveError(null)
+
+    try {
+      const result = await setEventPublishedAction({
+        userId: user.id,
+        tenantId: user.tenant_id,
+        isPublished: !isPublished,
+      })
+
+      if (result.success) {
+        setIsPublished(!isPublished)
+        alert(isPublished ? 'Invitación despublicada' : 'Invitación publicada exitosamente')
+      } else {
+        setSaveError(result.error || 'Error al cambiar el estado de publicación')
+      }
+    } catch (err) {
+      setSaveError('Error al cambiar el estado de publicación')
+      console.error('Failed to toggle publish:', err)
+    } finally {
+      setSaving(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
       <div className="container mx-auto px-4 py-8 max-w-7xl">
@@ -172,10 +204,68 @@ export default function ClientDashboardPage() {
               Bienvenido, {user.full_name || user.email}
             </p>
           </div>
-          <Button variant="outline" onClick={logout}>
-            <LogOut className="mr-2 h-4 w-4" />
-            Cerrar sesión
-          </Button>
+          <div className="flex items-center gap-3">
+            {selectedTemplate && tenantSlug && (
+              <Card className="px-4 py-2">
+                <CardContent className="p-0 flex items-center gap-3">
+                  {isPublished ? (
+                    <>
+                      <Globe className="h-4 w-4 text-green-600" />
+                      <span className="text-sm text-green-600 font-medium">Publicado</span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleTogglePublish}
+                        disabled={saving}
+                        className="h-7 px-2"
+                      >
+                        {saving ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <Lock className="h-3 w-3" />
+                        )}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const url = `${window.location.origin}/${tenantSlug}`
+                          navigator.clipboard.writeText(url)
+                          alert('Enlace copiado al portapapeles')
+                        }}
+                        className="h-7"
+                      >
+                        <Share2 className="h-3 w-3 mr-1" />
+                        Compartir
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">Borrador</span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleTogglePublish}
+                        disabled={saving}
+                        className="h-7 px-2"
+                      >
+                        {saving ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <Globe className="h-3 w-3" />
+                        )}
+                      </Button>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+            <Button variant="outline" onClick={logout}>
+              <LogOut className="mr-2 h-4 w-4" />
+              Cerrar sesión
+            </Button>
+          </div>
         </header>
 
         <Tabs value={currentView} onValueChange={(v) => setCurrentView(v as DashboardView)}>

@@ -5,7 +5,7 @@
 
 'use server'
 
-import { saveEventConfig, getEventConfig, hasEventConfig } from '@/services/events'
+import { saveEventConfig, getEventConfig, hasEventConfig, getPublicEventConfig, setEventPublished } from '@/services/events'
 import { EventConfig } from '@/types/event'
 
 export interface SaveEventConfigInput {
@@ -82,6 +82,55 @@ export async function hasEventConfigAction(input: GetEventConfigInput) {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to check event configuration',
       hasConfig: false,
+    }
+  }
+}
+
+export interface GetPublicEventConfigInput {
+  tenantSlug: string
+}
+
+/**
+ * Get published event configuration by tenant slug (public access)
+ */
+export async function getPublicEventConfigAction(input: GetPublicEventConfigInput) {
+  try {
+    const config = await getPublicEventConfig(input.tenantSlug)
+    
+    return {
+      success: true,
+      data: config,
+    }
+  } catch (error) {
+    console.error('[getPublicEventConfigAction] Error:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to get public event configuration',
+    }
+  }
+}
+
+export interface SetEventPublishedInput {
+  userId: string
+  tenantId: string
+  isPublished: boolean
+}
+
+/**
+ * Publish/unpublish event configuration
+ */
+export async function setEventPublishedAction(input: SetEventPublishedInput) {
+  try {
+    await setEventPublished(input.userId, input.tenantId, input.isPublished)
+    
+    return {
+      success: true,
+    }
+  } catch (error) {
+    console.error('[setEventPublishedAction] Error:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to update publish status',
     }
   }
 }

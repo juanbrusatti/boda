@@ -84,7 +84,10 @@ export async function getEventConfig(
 
   const { data, error } = await supabase
     .from('event_configs')
-    .select('*')
+    .select(`
+      *,
+      tenants!inner(slug)
+    `)
     .eq('user_id', userId)
     .eq('tenant_id', tenantId)
     .single()
@@ -151,4 +154,33 @@ export async function setEventPublished(
   if (error) {
     throw new Error(`Failed to update publish status: ${error.message}`)
   }
+}
+
+/**
+ * Get published event configuration by tenant slug (public access)
+ * This is used for the public invitation page
+ */
+export async function getPublicEventConfig(tenantSlug: string): Promise<EventConfigDB | null> {
+  const supabase = await createServerSupabaseClient()
+
+  const { data, error } = await supabase
+    .from('event_configs')
+    .select(`
+      *,
+      tenants!inner(slug, is_active)
+    `)
+    .eq('tenants.slug', tenantSlug)
+    .eq('tenants.is_active', true)
+    .eq('is_published', true)
+    .single()
+
+  if (error) {
+    if (error.code === 'PGRST116') {
+      // Not found
+      return null
+    }
+    throw new Error(`Failed to fetch public event config: ${error.message}`)
+  }
+
+  return data as EventConfigDB
 }
