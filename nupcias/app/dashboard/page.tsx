@@ -11,6 +11,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Sparkles, Edit, Users, LogOut, ArrowLeft } from 'lucide-react'
+import type { Template } from '@/data/templates'
+import type { EventConfig } from '@/types/event'
 
 type DashboardView = 'templates' | 'edit' | 'rsvp'
 
@@ -100,12 +102,26 @@ export default function ClientDashboardPage() {
 
           <TabsContent value="edit" className="mt-6">
             {selectedTemplate && editedData ? (
-              <EditView
-                template={templates.find(t => t.id === selectedTemplate)!}
-                data={editedData}
-                onDataChange={setEditedData}
-                onBack={handleBackToTemplates}
-              />
+              (() => {
+                const template = templates.find(t => t.id === selectedTemplate)
+                if (!template) {
+                  return (
+                    <Card>
+                      <CardContent className="py-8 text-center text-destructive">
+                        Template no encontrado
+                      </CardContent>
+                    </Card>
+                  )
+                }
+                return (
+                  <EditView
+                    template={template}
+                    data={editedData}
+                    onDataChange={setEditedData}
+                    onBack={handleBackToTemplates}
+                  />
+                )
+              })() 
             ) : (
               <Card>
                 <CardContent className="flex flex-col items-center justify-center py-12">
@@ -174,9 +190,9 @@ function EditView({
   onDataChange,
   onBack,
 }: {
-  template: any
-  data: any
-  onDataChange: (data: any) => void
+  template: Template
+  data: EventConfig
+  onDataChange: (data: EventConfig) => void
   onBack: () => void
 }) {
   const handleSave = () => {
@@ -314,7 +330,7 @@ function EditView({
               <Label htmlFor="rsvpHeading">Título de RSVP</Label>
               <Input
                 id="rsvpHeading"
-                value={data.rsvp?.heading}
+                value={data.rsvp?.heading || ''}
                 onChange={(e) => onDataChange({ ...data, rsvp: { ...data.rsvp, heading: e.target.value } })}
               />
             </div>
@@ -322,7 +338,7 @@ function EditView({
               <Label htmlFor="rsvpSubheading">Subtítulo de RSVP</Label>
               <Textarea
                 id="rsvpSubheading"
-                value={data.rsvp?.subheading}
+                value={data.rsvp?.subheading || ''}
                 onChange={(e) => onDataChange({ ...data, rsvp: { ...data.rsvp, subheading: e.target.value } })}
                 rows={3}
               />
@@ -331,7 +347,7 @@ function EditView({
               <Label htmlFor="rsvpButton">Texto del botón</Label>
               <Input
                 id="rsvpButton"
-                value={data.rsvp?.buttonLabel}
+                value={data.rsvp?.buttonLabel || ''}
                 onChange={(e) => onDataChange({ ...data, rsvp: { ...data.rsvp, buttonLabel: e.target.value } })}
               />
             </div>
@@ -339,7 +355,7 @@ function EditView({
               <Label htmlFor="rsvpDeadline">Fecha límite</Label>
               <Input
                 id="rsvpDeadline"
-                value={data.rsvp?.deadline}
+                value={data.rsvp?.deadline || ''}
                 onChange={(e) => onDataChange({ ...data, rsvp: { ...data.rsvp, deadline: e.target.value } })}
               />
             </div>

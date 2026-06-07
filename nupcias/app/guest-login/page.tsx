@@ -26,7 +26,7 @@ export default function GuestLoginPage() {
       }
 
       // Redirect to guest dashboard
-      router.push('/guest-dashboard')
+      router.push('/dashboard')
     } catch (err) {
       const message = err instanceof Error ? err.message : 'An unexpected error occurred'
       setError(message)
