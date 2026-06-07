@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import { templates } from '@/data/templates'
@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Sparkles, Edit, Users, LogOut, ArrowLeft, Eye } from 'lucide-react'
+import { Sparkles, Edit, Users, LogOut, ArrowLeft, Eye, Loader2 } from 'lucide-react'
 import { Hero } from '@/components/sections/hero'
 import { EventInfo } from '@/components/sections/event-info'
 import { Countdown } from '@/components/sections/countdown'
@@ -20,6 +20,8 @@ import { Gallery } from '@/components/sections/gallery'
 import { Location } from '@/components/sections/location'
 import type { Template } from '@/data/templates'
 import type { EventConfig } from '@/types/event'
+import { getEventConfigAction, saveEventConfigAction, hasEventConfigAction } from '@/app/actions/event-config'
+import type { EventConfigDB } from '@/types/event'
 
 type DashboardView = 'templates' | 'edit' | 'rsvp'
 
@@ -29,6 +31,39 @@ export default function ClientDashboardPage() {
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null)
   const [currentView, setCurrentView] = useState<DashboardView>('templates')
   const [editedData, setEditedData] = useState<any>(null)
+  const [loadingConfig, setLoadingConfig] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
+
+  // Load existing event configuration on mount
+  useEffect(() => {
+    async function loadConfig() {
+      if (!user || !user.tenant_id) return
+
+      try {
+        const result = await getEventConfigAction({
+          userId: user.id,
+          tenantId: user.tenant_id,
+        })
+
+        if (result.success && result.data) {
+          setSelectedTemplate(result.data.template_id)
+          setEditedData(result.data.config)
+          setCurrentView('edit')
+        }
+      } catch (err) {
+        console.error('Failed to load event config:', err)
+      } finally {
+        setLoadingConfig(false)
+      }
+    }
+
+    if (user && user.tenant_id) {
+      loadConfig()
+    } else {
+      setLoadingConfig(false)
+    }
+  }, [user])
 
   if (error) {
     return (
@@ -56,12 +91,41 @@ export default function ClientDashboardPage() {
     )
   }
 
-  const handleSelectTemplate = (templateId: string) => {
+  if (loadingConfig) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
+
+  const handleSelectTemplate = async (templateId: string) => {
     const template = templates.find(t => t.id === templateId)
-    if (template) {
-      setSelectedTemplate(templateId)
-      setEditedData({ ...template.data })
-      setCurrentView('edit')
+    if (!template || !user.tenant_id) return
+
+    setSaving(true)
+    setSaveError(null)
+
+    try {
+      const result = await saveEventConfigAction({
+        userId: user.id,
+        tenantId: user.tenant_id,
+        templateId: templateId,
+        config: template.data,
+      })
+
+      if (result.success) {
+        setSelectedTemplate(templateId)
+        setEditedData({ ...template.data })
+        setCurrentView('edit')
+      } else {
+        setSaveError(result.error || 'Error al guardar el template')
+      }
+    } catch (err) {
+      setSaveError('Error al guardar el template')
+      console.error('Failed to save template:', err)
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -69,6 +133,33 @@ export default function ClientDashboardPage() {
     setCurrentView('templates')
     setSelectedTemplate(null)
     setEditedData(null)
+  }
+
+  const handleSaveChanges = async () => {
+    if (!selectedTemplate || !editedData || !user.tenant_id) return
+
+    setSaving(true)
+    setSaveError(null)
+
+    try {
+      const result = await saveEventConfigAction({
+        userId: user.id,
+        tenantId: user.tenant_id,
+        templateId: selectedTemplate,
+        config: editedData,
+      })
+
+      if (result.success) {
+        alert('Cambios guardados exitosamente')
+      } else {
+        setSaveError(result.error || 'Error al guardar los cambios')
+      }
+    } catch (err) {
+      setSaveError('Error al guardar los cambios')
+      console.error('Failed to save changes:', err)
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -126,6 +217,9 @@ export default function ClientDashboardPage() {
                     data={editedData}
                     onDataChange={setEditedData}
                     onBack={handleBackToTemplates}
+                    onSave={handleSaveChanges}
+                    saving={saving}
+                    saveError={saveError}
                   />
                 )
               })() 
@@ -210,17 +304,18 @@ function EditView({
   data,
   onDataChange,
   onBack,
+  onSave,
+  saving,
+  saveError,
 }: {
   template: Template
   data: EventConfig
   onDataChange: (data: EventConfig) => void
   onBack: () => void
+  onSave: () => void
+  saving: boolean
+  saveError: string | null
 }) {
-  const handleSave = () => {
-    console.log('Guardando cambios:', data)
-    alert('Cambios guardados (funcionalidad de guardado pendiente)')
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -233,11 +328,24 @@ function EditView({
             <ArrowLeft className="mr-2 h-4 w-4" />
             Volver
           </Button>
-          <Button onClick={handleSave}>
-            Guardar cambios
+          <Button onClick={onSave} disabled={saving}>
+            {saving ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Guardando...
+              </>
+            ) : (
+              'Guardar cambios'
+            )}
           </Button>
         </div>
       </div>
+
+      {saveError && (
+        <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-md">
+          {saveError}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
