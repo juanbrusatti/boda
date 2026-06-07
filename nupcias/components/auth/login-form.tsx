@@ -8,6 +8,7 @@ export function LoginForm() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showPassword, setShowPassword] = useState(false) 
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -72,13 +73,20 @@ export function LoginForm() {
 
         <div>
           <label htmlFor="password" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-            Constraseña
+            Contraseña
           </label>
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{ marginLeft: '10px' }}
+            >
+              {showPassword ? 'Ocultar' : 'Mostrar'}
+            </button>
           <input
             id="password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             name="password"
-            placeholder="Enter your password"
+            placeholder="Ingresa tu contraseña"
             required
             disabled={isLoading}
             style={{
