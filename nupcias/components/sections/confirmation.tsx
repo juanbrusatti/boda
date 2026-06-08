@@ -14,6 +14,10 @@ export function Confirmation({ event }: ConfirmationProps) {
   // intentionally prepared for a future RSVP form backed by Supabase.
   const [confirmed, setConfirmed] = useState(false)
 
+  if (event.showRSVP === false) {
+    return null
+  }
+
   return (
     <section id="rsvp" className="relative overflow-hidden bg-primary py-28 text-primary-foreground md:py-40">
       <div className="mx-auto max-w-2xl px-6 text-center">

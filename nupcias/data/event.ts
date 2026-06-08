@@ -54,17 +54,20 @@ export const event: EventConfig = {
       caption: 'Formal de noche',
     },
   ],
+  showLocation: true,
   location: {
     venue: 'Salón Los Robles',
     address: 'Camino de los Robles 1450, Buenos Aires, Argentina',
     mapQuery: 'Salón Los Robles, Buenos Aires, Argentina',
   },
+  showGallery: true,
   gallery: [
     { src: '/images/gallery-1.png', alt: 'Los novios tomados de la mano' },
     { src: '/images/gallery-2.png', alt: 'Mesa de recepción elegante con velas' },
     { src: '/images/gallery-3.png', alt: 'Pareja bailando bajo luces cálidas' },
     { src: '/images/gallery-4.png', alt: 'Ramo de novia sobre una silla vintage' },
   ],
+  showRSVP: true,
   rsvp: {
     heading: 'Confirmá tu asistencia',
     subheading:

@@ -56,10 +56,16 @@ export interface EventConfig {
   story: StoryParagraph[]
   /** Key event detail cards (date, time, venue, dress code, etc.) */
   details: EventDetail[]
+  /** Whether to show the location section */
+  showLocation: boolean
   /** Venue + map info */
   location: EventLocation
+  /** Whether to show the gallery section */
+  showGallery: boolean
   /** Gallery images */
   gallery: GalleryImage[]
+  /** Whether to show the RSVP section */
+  showRSVP: boolean
   /** RSVP section copy */
   rsvp: {
     heading: string
