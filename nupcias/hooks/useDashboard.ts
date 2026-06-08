@@ -13,6 +13,7 @@ export function useDashboard() {
   const [loadingConfig, setLoadingConfig] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
+  const [loadError, setLoadError] = useState<string | null>(null)
   const [isPublished, setIsPublished] = useState(false)
   const [tenantSlug, setTenantSlug] = useState<string | null>(null)
 
@@ -36,6 +37,7 @@ export function useDashboard() {
         }
       } catch (err) {
         console.error('Failed to load event config:', err)
+        setLoadError('No se pudo cargar la configuración')
       } finally {
         setLoadingConfig(false)
       }
@@ -150,6 +152,7 @@ export function useDashboard() {
     tenantSlug,
     setCurrentView,
     setEditedData,
+    setSaveError,
     handleSelectTemplate,
     handleBackToTemplates,
     handleSaveChanges,
