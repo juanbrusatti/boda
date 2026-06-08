@@ -1,5 +1,6 @@
 import { MapPin, Navigation } from 'lucide-react'
 import { Reveal } from '@/components/reveal'
+import { getTypographyStyle } from '@/lib/typography-utils'
 import type { EventConfig } from '@/types/event'
 
 interface LocationProps {
@@ -11,6 +12,7 @@ export function Location({ event }: LocationProps) {
     return null
   }
 
+  const locationTypography = event.typography?.location
   const query = encodeURIComponent(event.location.mapQuery)
   // Ready to swap for a Google Maps Embed API key in the future.
   const embedSrc = `https://www.google.com/maps?q=${query}&output=embed`
@@ -20,13 +22,22 @@ export function Location({ event }: LocationProps) {
     <section id="ubicacion" className="bg-background py-24 md:py-36">
       <div className="mx-auto max-w-6xl px-6">
         <Reveal className="text-center">
-          <p className="text-xs font-light uppercase tracking-[0.4em] text-muted-foreground">
+          <p
+            className="text-xs font-light uppercase tracking-[0.4em] text-muted-foreground"
+            style={getTypographyStyle(locationTypography?.label)}
+          >
             Cómo llegar
           </p>
-          <h2 className="mt-5 text-balance font-serif text-4xl font-light tracking-tight text-foreground md:text-5xl">
+          <h2
+            className="mt-5 text-balance font-serif text-4xl font-light tracking-tight text-foreground md:text-5xl"
+            style={getTypographyStyle(locationTypography?.title)}
+          >
             {event.location.venue}
           </h2>
-          <p className="mx-auto mt-4 max-w-md text-pretty text-sm font-light leading-relaxed text-muted-foreground">
+          <p
+            className="mx-auto mt-4 max-w-md text-pretty text-sm font-light leading-relaxed text-muted-foreground"
+            style={getTypographyStyle(locationTypography?.body)}
+          >
             {event.location.address}
           </p>
         </Reveal>

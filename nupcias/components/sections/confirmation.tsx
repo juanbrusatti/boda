@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Check, Heart } from 'lucide-react'
 import { Reveal } from '@/components/reveal'
+import { getTypographyStyle } from '@/lib/typography-utils'
 import type { EventConfig } from '@/types/event'
 
 interface ConfirmationProps {
@@ -13,6 +14,7 @@ export function Confirmation({ event }: ConfirmationProps) {
   // Visual-only acknowledgement. No data is persisted yet — this section is
   // intentionally prepared for a future RSVP form backed by Supabase.
   const [confirmed, setConfirmed] = useState(false)
+  const rsvpTypography = event.typography?.rsvp
 
   if (event.showRSVP === false) {
     return null
@@ -26,11 +28,17 @@ export function Confirmation({ event }: ConfirmationProps) {
             <Heart className="size-5" strokeWidth={1.5} />
           </span>
 
-          <h2 className="mt-8 text-balance font-serif text-4xl font-light leading-tight tracking-tight md:text-5xl">
+          <h2
+            className="mt-8 text-balance font-serif text-4xl font-light leading-tight tracking-tight md:text-5xl"
+            style={getTypographyStyle(rsvpTypography?.title)}
+          >
             {event.rsvp.heading}
           </h2>
 
-          <p className="mx-auto mt-6 max-w-md text-pretty text-base font-light leading-relaxed text-primary-foreground/75">
+          <p
+            className="mx-auto mt-6 max-w-md text-pretty text-base font-light leading-relaxed text-primary-foreground/75"
+            style={getTypographyStyle(rsvpTypography?.body)}
+          >
             {event.rsvp.subheading}
           </p>
 
@@ -53,7 +61,10 @@ export function Confirmation({ event }: ConfirmationProps) {
             </button>
           </div>
 
-          <p className="mt-8 text-[11px] font-light uppercase tracking-[0.25em] text-primary-foreground/55">
+          <p
+            className="mt-8 text-[11px] font-light uppercase tracking-[0.25em] text-primary-foreground/55"
+            style={getTypographyStyle(rsvpTypography?.label)}
+          >
             {event.rsvp.deadline}
           </p>
         </Reveal>

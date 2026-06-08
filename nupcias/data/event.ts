@@ -79,4 +79,37 @@ export const event: EventConfig = {
     name: 'Invita',
     tagline: 'Invitaciones digitales que se sienten inolvidables',
   },
+  typography: {
+    hero: {
+      title: { fontFamily: 'Playfair Display', fontWeight: 600 },
+      subtitle: { fontFamily: 'Inter', fontWeight: 300 },
+      body: { fontFamily: 'Inter', fontWeight: 400 },
+    },
+    countdown: {
+      title: { fontFamily: 'Playfair Display', fontWeight: 400 },
+      body: { fontFamily: 'Inter', fontWeight: 300 },
+      label: { fontFamily: 'Inter', fontWeight: 400 },
+    },
+    story: {
+      title: { fontFamily: 'Playfair Display', fontWeight: 600 },
+      subtitle: { fontFamily: 'Inter', fontWeight: 300 },
+      body: { fontFamily: 'Lora', fontWeight: 400 },
+    },
+    gallery: {
+      title: { fontFamily: 'Playfair Display', fontWeight: 600 },
+      label: { fontFamily: 'Inter', fontWeight: 400 },
+    },
+    location: {
+      title: { fontFamily: 'Playfair Display', fontWeight: 600 },
+      body: { fontFamily: 'Inter', fontWeight: 400 },
+    },
+    rsvp: {
+      title: { fontFamily: 'Playfair Display', fontWeight: 400 },
+      body: { fontFamily: 'Inter', fontWeight: 300 },
+      label: { fontFamily: 'Inter', fontWeight: 400 },
+    },
+    footer: {
+      body: { fontFamily: 'Inter', fontWeight: 400 },
+    },
+  },
 }

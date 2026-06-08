@@ -2,6 +2,7 @@
 
 import { useCountdown } from '@/lib/use-countdown'
 import { Reveal } from '@/components/reveal'
+import { getTypographyStyle } from '@/lib/typography-utils'
 import type { EventConfig } from '@/types/event'
 
 interface CountdownProps {
@@ -10,6 +11,7 @@ interface CountdownProps {
 
 export function Countdown({ event }: CountdownProps) {
   const timeLeft = useCountdown(event.dateISO)
+  const countdownTypography = event.typography?.countdown
 
   if (event.showCountdown === false) {
     return null
@@ -26,10 +28,16 @@ export function Countdown({ event }: CountdownProps) {
     <section className="bg-primary py-20 text-primary-foreground md:py-28">
       <div className="mx-auto max-w-4xl px-6">
         <Reveal className="text-center">
-          <p className="text-xs font-light uppercase tracking-[0.4em] text-primary-foreground/70">
+          <p
+            className="text-xs font-light uppercase tracking-[0.4em] text-primary-foreground/70"
+            style={getTypographyStyle(countdownTypography?.title)}
+          >
             {event.countdownTitle || 'Cuenta regresiva'}
           </p>
-          <h2 className="mt-4 font-serif text-3xl font-light tracking-tight md:text-4xl">
+          <h2
+            className="mt-4 font-serif text-3xl font-light tracking-tight md:text-4xl"
+            style={getTypographyStyle(countdownTypography?.subtitle)}
+          >
             {timeLeft?.isPast ? '¡Hoy es el gran día!' : (event.countdownSubtitle || 'Falta cada vez menos')}
           </h2>
         </Reveal>
@@ -41,10 +49,16 @@ export function Countdown({ event }: CountdownProps) {
                 key={unit.label}
                 className="flex flex-col items-center rounded-md border border-primary-foreground/15 bg-primary-foreground/5 px-4 py-8 backdrop-blur-sm"
               >
-                <span className="font-serif text-5xl font-light tabular-nums tracking-tight md:text-6xl">
+                <span
+                  className="font-serif text-5xl font-light tabular-nums tracking-tight md:text-6xl"
+                  style={getTypographyStyle(countdownTypography?.body)}
+                >
                   {unit.value === undefined ? '··' : String(unit.value).padStart(2, '0')}
                 </span>
-                <span className="mt-3 text-[10px] font-light uppercase tracking-[0.3em] text-primary-foreground/70">
+                <span
+                  className="mt-3 text-[10px] font-light uppercase tracking-[0.3em] text-primary-foreground/70"
+                  style={getTypographyStyle(countdownTypography?.label)}
+                >
                   {unit.label}
                 </span>
               </div>
