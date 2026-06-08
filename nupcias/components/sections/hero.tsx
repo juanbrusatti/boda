@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import { getTypographyStyle } from '@/lib/typography-utils'
+import { getColorStyle } from '@/lib/color-utils'
 import type { EventConfig } from '@/types/event'
 
 interface HeroProps {
@@ -8,9 +9,10 @@ interface HeroProps {
 
 export function Hero({ event }: HeroProps) {
   const heroTypography = event.typography?.hero
+  const heroColors = event.colors?.hero?.colors
 
   return (
-    <section id="top" className="relative flex min-h-screen items-center justify-center overflow-hidden">
+    <section id="top" className="relative flex min-h-screen items-center justify-center overflow-hidden" style={getColorStyle(heroColors)}>
       <Image
         src={event.coverImage || '/placeholder.svg'}
         alt=""

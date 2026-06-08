@@ -1,4 +1,5 @@
 import type { EventConfig } from '@/types/event'
+import { getDefaultColors } from '@/lib/default-colors'
 
 /**
  * Single source of truth for all event content.
@@ -112,4 +113,5 @@ export const event: EventConfig = {
       body: { fontFamily: 'Inter', fontWeight: 400 },
     },
   },
+  colors: getDefaultColors('wedding'),
 }

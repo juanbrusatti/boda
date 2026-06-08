@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Check, Heart } from 'lucide-react'
 import { Reveal } from '@/components/reveal'
 import { getTypographyStyle } from '@/lib/typography-utils'
+import { getColorStyle } from '@/lib/color-utils'
 import type { EventConfig } from '@/types/event'
 
 interface ConfirmationProps {
@@ -15,16 +16,17 @@ export function Confirmation({ event }: ConfirmationProps) {
   // intentionally prepared for a future RSVP form backed by Supabase.
   const [confirmed, setConfirmed] = useState(false)
   const rsvpTypography = event.typography?.rsvp
+  const rsvpColors = event.colors?.rsvp?.colors
 
   if (event.showRSVP === false) {
     return null
   }
 
   return (
-    <section id="rsvp" className="relative overflow-hidden bg-primary py-28 text-primary-foreground md:py-40">
+    <section id="rsvp" className="relative overflow-hidden py-28 md:py-40" style={getColorStyle(rsvpColors)}>
       <div className="mx-auto max-w-2xl px-6 text-center">
         <Reveal>
-          <span className="mx-auto flex size-14 items-center justify-center rounded-full border border-primary-foreground/20 text-accent">
+          <span className="mx-auto flex size-14 items-center justify-center rounded-full border border-current/20">
             <Heart className="size-5" strokeWidth={1.5} />
           </span>
 
@@ -36,7 +38,7 @@ export function Confirmation({ event }: ConfirmationProps) {
           </h2>
 
           <p
-            className="mx-auto mt-6 max-w-md text-pretty text-base font-light leading-relaxed text-primary-foreground/75"
+            className="mx-auto mt-6 max-w-md text-pretty text-base font-light leading-relaxed opacity-75"
             style={getTypographyStyle(rsvpTypography?.body)}
           >
             {event.rsvp.subheading}
@@ -47,12 +49,13 @@ export function Confirmation({ event }: ConfirmationProps) {
               type="button"
               onClick={() => setConfirmed(true)}
               aria-live="polite"
-              className="group inline-flex items-center gap-3 rounded-full bg-background px-9 py-4 text-xs font-light uppercase tracking-[0.25em] text-foreground transition-all duration-300 hover:tracking-[0.32em] disabled:opacity-90"
+              className="group inline-flex items-center gap-3 rounded-full px-9 py-4 text-xs font-light uppercase tracking-[0.25em] transition-all duration-300 hover:tracking-[0.32em] disabled:opacity-90"
+              style={{ backgroundColor: rsvpColors?.background || '#ffffff', color: rsvpColors?.text || '#000000' }}
               disabled={confirmed}
             >
               {confirmed ? (
                 <>
-                  <Check className="size-4 text-accent" strokeWidth={2} />
+                  <Check className="size-4" strokeWidth={2} />
                   ¡Gracias por confirmar!
                 </>
               ) : (
@@ -62,7 +65,7 @@ export function Confirmation({ event }: ConfirmationProps) {
           </div>
 
           <p
-            className="mt-8 text-[11px] font-light uppercase tracking-[0.25em] text-primary-foreground/55"
+            className="mt-8 text-[11px] font-light uppercase tracking-[0.25em] opacity-55"
             style={getTypographyStyle(rsvpTypography?.label)}
           >
             {event.rsvp.deadline}

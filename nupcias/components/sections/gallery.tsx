@@ -2,6 +2,7 @@ import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import { Reveal } from '@/components/reveal'
 import { getTypographyStyle } from '@/lib/typography-utils'
+import { getColorStyle } from '@/lib/color-utils'
 import type { EventConfig } from '@/types/event'
 
 interface GalleryProps {
@@ -22,19 +23,20 @@ export function Gallery({ event }: GalleryProps) {
   }
 
   const galleryTypography = event.typography?.gallery
+  const galleryColors = event.colors?.gallery?.colors
 
   return (
-    <section id="galeria" className="bg-secondary py-24 md:py-36">
+    <section id="galeria" className="py-24 md:py-36" style={getColorStyle(galleryColors)}>
       <div className="mx-auto max-w-6xl px-6">
         <Reveal className="text-center">
           <p
-            className="text-xs font-light uppercase tracking-[0.4em] text-muted-foreground"
+            className="text-xs font-light uppercase tracking-[0.4em] opacity-60"
             style={getTypographyStyle(galleryTypography?.label)}
           >
             Momentos
           </p>
           <h2
-            className="mt-5 text-balance font-serif text-4xl font-light tracking-tight text-foreground md:text-5xl"
+            className="mt-5 text-balance font-serif text-4xl font-light tracking-tight md:text-5xl"
             style={getTypographyStyle(galleryTypography?.title)}
           >
             Galería

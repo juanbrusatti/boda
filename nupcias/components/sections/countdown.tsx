@@ -3,6 +3,7 @@
 import { useCountdown } from '@/lib/use-countdown'
 import { Reveal } from '@/components/reveal'
 import { getTypographyStyle } from '@/lib/typography-utils'
+import { getColorStyle } from '@/lib/color-utils'
 import type { EventConfig } from '@/types/event'
 
 interface CountdownProps {
@@ -12,6 +13,7 @@ interface CountdownProps {
 export function Countdown({ event }: CountdownProps) {
   const timeLeft = useCountdown(event.dateISO)
   const countdownTypography = event.typography?.countdown
+  const countdownColors = event.colors?.countdown?.colors
 
   if (event.showCountdown === false) {
     return null
@@ -25,11 +27,11 @@ export function Countdown({ event }: CountdownProps) {
   ]
 
   return (
-    <section className="bg-primary py-20 text-primary-foreground md:py-28">
+    <section className="py-20 md:py-28" style={getColorStyle(countdownColors)}>
       <div className="mx-auto max-w-4xl px-6">
         <Reveal className="text-center">
           <p
-            className="text-xs font-light uppercase tracking-[0.4em] text-primary-foreground/70"
+            className="text-xs font-light uppercase tracking-[0.4em] opacity-70"
             style={getTypographyStyle(countdownTypography?.title)}
           >
             {event.countdownTitle || 'Cuenta regresiva'}
@@ -47,7 +49,7 @@ export function Countdown({ event }: CountdownProps) {
             {units.map((unit) => (
               <div
                 key={unit.label}
-                className="flex flex-col items-center rounded-md border border-primary-foreground/15 bg-primary-foreground/5 px-4 py-8 backdrop-blur-sm"
+                className="flex flex-col items-center rounded-md border border-current/15 bg-current/5 px-4 py-8 backdrop-blur-sm"
               >
                 <span
                   className="font-serif text-5xl font-light tabular-nums tracking-tight md:text-6xl"
@@ -56,7 +58,7 @@ export function Countdown({ event }: CountdownProps) {
                   {unit.value === undefined ? '··' : String(unit.value).padStart(2, '0')}
                 </span>
                 <span
-                  className="mt-3 text-[10px] font-light uppercase tracking-[0.3em] text-primary-foreground/70"
+                  className="mt-3 text-[10px] font-light uppercase tracking-[0.3em] opacity-70"
                   style={getTypographyStyle(countdownTypography?.label)}
                 >
                   {unit.label}

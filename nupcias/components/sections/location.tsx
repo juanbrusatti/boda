@@ -1,6 +1,7 @@
 import { MapPin, Navigation } from 'lucide-react'
 import { Reveal } from '@/components/reveal'
 import { getTypographyStyle } from '@/lib/typography-utils'
+import { getColorStyle } from '@/lib/color-utils'
 import type { EventConfig } from '@/types/event'
 
 interface LocationProps {
@@ -13,29 +14,30 @@ export function Location({ event }: LocationProps) {
   }
 
   const locationTypography = event.typography?.location
+  const locationColors = event.colors?.location?.colors
   const query = encodeURIComponent(event.location.mapQuery)
   // Ready to swap for a Google Maps Embed API key in the future.
   const embedSrc = `https://www.google.com/maps?q=${query}&output=embed`
   const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${query}`
 
   return (
-    <section id="ubicacion" className="bg-background py-24 md:py-36">
+    <section id="ubicacion" className="py-24 md:py-36" style={getColorStyle(locationColors)}>
       <div className="mx-auto max-w-6xl px-6">
         <Reveal className="text-center">
           <p
-            className="text-xs font-light uppercase tracking-[0.4em] text-muted-foreground"
+            className="text-xs font-light uppercase tracking-[0.4em] opacity-60"
             style={getTypographyStyle(locationTypography?.label)}
           >
             Cómo llegar
           </p>
           <h2
-            className="mt-5 text-balance font-serif text-4xl font-light tracking-tight text-foreground md:text-5xl"
+            className="mt-5 text-balance font-serif text-4xl font-light tracking-tight md:text-5xl"
             style={getTypographyStyle(locationTypography?.title)}
           >
             {event.location.venue}
           </h2>
           <p
-            className="mx-auto mt-4 max-w-md text-pretty text-sm font-light leading-relaxed text-muted-foreground"
+            className="mx-auto mt-4 max-w-md text-pretty text-sm font-light leading-relaxed opacity-80"
             style={getTypographyStyle(locationTypography?.body)}
           >
             {event.location.address}
@@ -43,8 +45,8 @@ export function Location({ event }: LocationProps) {
         </Reveal>
 
         <Reveal delay={150}>
-          <div className="mt-12 overflow-hidden rounded-xl border border-border/50 shadow-lg shadow-black/5">
-            <div className="relative aspect-[16/10] w-full md:aspect-[21/9] bg-muted/30">
+          <div className="mt-12 overflow-hidden rounded-xl border border-current/20 shadow-lg shadow-black/5">
+            <div className="relative aspect-[16/10] w-full md:aspect-[21/9] bg-current/10">
               <iframe
                 title={`Mapa de ${event.location.venue}`}
                 src={embedSrc}
@@ -62,7 +64,8 @@ export function Location({ event }: LocationProps) {
             href={directionsUrl}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 text-xs font-light uppercase tracking-[0.25em] text-primary-foreground transition-all duration-300 hover:tracking-[0.32em]"
+            className="inline-flex items-center gap-2 rounded-full bg-current px-7 py-3.5 text-xs font-light uppercase tracking-[0.25em] transition-all duration-300 hover:tracking-[0.32em]"
+            style={{ color: locationColors?.background || '#ffffff' }}
           >
             <Navigation className="size-4" strokeWidth={1.5} />
             Cómo llegar
@@ -71,7 +74,7 @@ export function Location({ event }: LocationProps) {
             href={`https://www.google.com/maps/search/?api=1&query=${query}`}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-2 rounded-full border border-foreground/20 px-7 py-3.5 text-xs font-light uppercase tracking-[0.25em] text-foreground transition-colors duration-300 hover:bg-foreground hover:text-background"
+            className="inline-flex items-center gap-2 rounded-full border border-current/30 px-7 py-3.5 text-xs font-light uppercase tracking-[0.25em] transition-colors duration-300 hover:bg-current hover:text-background"
           >
             <MapPin className="size-4" strokeWidth={1.5} />
             Ver en el mapa

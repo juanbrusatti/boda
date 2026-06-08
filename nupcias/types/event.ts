@@ -60,6 +60,39 @@ export interface EventTypography {
   footer?: SectionTypography
 }
 
+export interface ColorConfig {
+  /** Background color */
+  background?: string
+  /** Text color */
+  text?: string
+  /** Accent color */
+  accent?: string
+  /** Secondary color */
+  secondary?: string
+}
+
+export interface SectionColors {
+  /** Colors for the section */
+  colors?: ColorConfig
+}
+
+export interface EventColors {
+  /** Hero section colors */
+  hero?: SectionColors
+  /** Countdown section colors */
+  countdown?: SectionColors
+  /** Story section colors */
+  story?: SectionColors
+  /** Gallery section colors */
+  gallery?: SectionColors
+  /** Location section colors */
+  location?: SectionColors
+  /** RSVP section colors */
+  rsvp?: SectionColors
+  /** Footer section colors */
+  footer?: SectionColors
+}
+
 export interface EventConfig {
   /** Primary title, e.g. "María & Juan" */
   title: string
@@ -118,6 +151,8 @@ export interface EventConfig {
   }
   /** Typography configuration for each section */
   typography?: EventTypography
+  /** Color configuration for each section */
+  colors?: EventColors
 }
 
 /**

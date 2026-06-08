@@ -1,4 +1,5 @@
 import type { EventConfig } from '@/types/event'
+import { getDefaultColors } from '@/lib/default-colors'
 
 export const quinceanera: EventConfig = {
   title: 'Mis 15 Años',
@@ -113,4 +114,5 @@ export const quinceanera: EventConfig = {
       body: { fontFamily: 'Montserrat', fontWeight: 400 },
     },
   },
+  colors: getDefaultColors('quinceanera'),
 }

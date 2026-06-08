@@ -8,6 +8,7 @@ import { availableIcons } from '@/lib/icons'
 import { StoryEditor } from './editors/story-editor'
 import { LocationEditor } from './editors/location-editor'
 import { TypographySelector } from './editors/typography-selector'
+import { ColorSelector } from './editors/color-selector'
 import type { Template } from '@/data/templates'
 import type { EventConfig } from '@/types/event'
 
@@ -103,6 +104,10 @@ export function EditView({
               />
               <TypographySelector section="hero" element="label" data={data} onDataChange={onDataChange} />
             </div>
+            <div className="space-y-2">
+              <Label>Colores de la sección</Label>
+              <ColorSelector section="hero" data={data} onDataChange={onDataChange} />
+            </div>
           </CardContent>
         </Card>
 
@@ -153,6 +158,10 @@ export function EditView({
                 }}
               />
             </div>
+            <div className="space-y-2">
+              <Label>Colores de la sección</Label>
+              <ColorSelector section="countdown" data={data} onDataChange={onDataChange} />
+            </div>
           </CardContent>
         </Card>
 
@@ -182,6 +191,10 @@ export function EditView({
             <div className="space-y-2">
               <Label>Tipografía de las etiquetas</Label>
               <TypographySelector section="gallery" element="label" data={data} onDataChange={onDataChange} />
+            </div>
+            <div className="space-y-2">
+              <Label>Colores de la sección</Label>
+              <ColorSelector section="gallery" data={data} onDataChange={onDataChange} />
             </div>
           </CardContent>
         </Card>
@@ -256,6 +269,10 @@ export function EditView({
                 placeholder="Te pedimos confirmar antes del..."
               />
               <TypographySelector section="rsvp" element="label" data={data} onDataChange={onDataChange} />
+            </div>
+            <div className="space-y-2">
+              <Label>Colores de la sección</Label>
+              <ColorSelector section="rsvp" data={data} onDataChange={onDataChange} />
             </div>
           </CardContent>
         </Card>
