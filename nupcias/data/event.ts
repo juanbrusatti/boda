@@ -20,8 +20,10 @@ export const event: EventConfig = {
   description:
     'Con la bendición de nuestras familias, queremos celebrar el comienzo de nuestra historia rodeados de las personas que más amamos.',
   coverImage: '/images/hero.png',
-  storyImage: '/images/story.png',
-  storyHeading: 'Nuestra historia',
+  showStory: true,
+  storyTitle: 'Nuestra historia',
+  storySubtitle: 'Dos caminos que se vuelven uno',
+  storyImages: ['/images/story.png'],
   story: [
     {
       text: 'Todo comenzó una tarde de otoño, entre cafés interminables y conversaciones que no querían terminar. Lo que parecía un encuentro casual se transformó, con el tiempo, en la certeza de que queríamos caminar juntos el resto del camino.',

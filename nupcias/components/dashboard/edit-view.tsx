@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { ArrowLeft, Loader2, Plus, Trash } from 'lucide-react'
 import { availableIcons } from '@/lib/icons'
+import { StoryEditor } from './editors/story-editor'
 import type { Template } from '@/data/templates'
 import type { EventConfig } from '@/types/event'
 
@@ -124,7 +125,7 @@ export function EditView({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="countdownSubtitle">Subtítulo</Label>
+              <Label htmlFor="countdownSubtitle">Titulo</Label>
               <Input
                 id="countdownSubtitle"
                 value={data.countdownSubtitle || ''}
@@ -163,6 +164,8 @@ export function EditView({
             </div>
           </CardContent>
         </Card>
+
+        <StoryEditor data={data} onDataChange={onDataChange} />
 
         <Card className="lg:col-span-2">
           <CardHeader>

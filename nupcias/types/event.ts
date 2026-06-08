@@ -44,10 +44,14 @@ export interface EventConfig {
   description: string
   /** Hero background image path */
   coverImage: string
-  /** Image used in the story section */
-  storyImage: string
-  /** Story heading */
-  storyHeading: string
+  /** Whether to show the story section */
+  showStory: boolean
+  /** Story title */
+  storyTitle: string
+  /** Story subtitle */
+  storySubtitle: string
+  /** Story images (multiple images) */
+  storyImages: string[]
   /** Story body paragraphs */
   story: StoryParagraph[]
   /** Key event detail cards (date, time, venue, dress code, etc.) */
