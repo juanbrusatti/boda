@@ -7,15 +7,23 @@ interface StoryProps {
 }
 
 export function Story({ event }: StoryProps) {
+  if (event.showStory === false) {
+    return null
+  }
+
+  const storyTitle = event.storyTitle || 'Dos caminos que se vuelven uno'
+  const storySubtitle = event.storySubtitle || 'Nuestra historia'
+  const storyImages = event.storyImages || []
+
   return (
     <section id="historia" className="bg-background py-24 md:py-36">
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 md:grid-cols-2 md:gap-20">
         <Reveal className="order-2 md:order-1">
           <p className="text-xs font-light uppercase tracking-[0.4em] text-muted-foreground">
-            {event.storyHeading}
+            {storyTitle}
           </p>
           <h2 className="mt-5 text-balance font-serif text-4xl font-light leading-tight tracking-tight text-foreground md:text-5xl">
-            Dos caminos que se vuelven uno
+            {storySubtitle}
           </h2>
 
           <div className="mt-8 flex flex-col gap-6">
@@ -33,15 +41,32 @@ export function Story({ event }: StoryProps) {
         </Reveal>
 
         <Reveal delay={150} className="order-1 md:order-2">
-          <div className="relative aspect-[4/5] overflow-hidden rounded-md">
-            <Image
-              src={event.storyImage || '/placeholder.svg'}
-              alt="Los novios caminando juntos al atardecer"
-              fill
-              sizes="(min-width: 768px) 50vw, 100vw"
-              className="object-cover transition-transform duration-700 hover:scale-105"
-            />
-          </div>
+          {storyImages.length > 0 ? (
+            <div className="grid gap-4">
+              {storyImages.map((image, index) => (
+                <div
+                  key={index}
+                  className={`relative overflow-hidden rounded-md ${
+                    storyImages.length === 1 ? 'aspect-[4/5]' : 'aspect-[4/3]'
+                  }`}
+                >
+                  <Image
+                    src={image || '/placeholder.svg'}
+                    alt={`Imagen ${index + 1} de la historia`}
+                    fill
+                    sizes="(min-width: 768px) 50vw, 100vw"
+                    className="object-cover transition-transform duration-700 hover:scale-105"
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="relative aspect-[4/5] overflow-hidden rounded-md bg-muted">
+              <div className="flex items-center justify-center h-full text-muted-foreground">
+                Sin imágenes
+              </div>
+            </div>
+          )}
         </Reveal>
       </div>
     </section>
