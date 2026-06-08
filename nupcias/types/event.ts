@@ -26,8 +26,8 @@ export interface EventLocation {
 export interface TypographyConfig {
   /** Font family name */
   fontFamily: string
-  /** Font weight (100-900) */
-  fontWeight?: number
+  /** Font weight (100-900 in increments of 100) */
+  fontWeight?: 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900
   /** Font style (normal, italic) */
   fontStyle?: 'normal' | 'italic'
 }

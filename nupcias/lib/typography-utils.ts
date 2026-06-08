@@ -16,7 +16,21 @@ export function getTypographyClassName(config?: TypographyConfig): string {
   const classes: string[] = []
 
   if (config.fontWeight) {
-    classes.push(`font-${config.fontWeight}`)
+    const weightMap: Record<number, string> = {
+      100: 'font-thin',
+      200: 'font-extralight',
+      300: 'font-light',
+      400: 'font-normal',
+      500: 'font-medium',
+      600: 'font-semibold',
+      700: 'font-bold',
+      800: 'font-extrabold',
+      900: 'font-black',
+    }
+    const weightClass = weightMap[config.fontWeight]
+    if (weightClass) {
+      classes.push(weightClass)
+    }
   }
 
   if (config.fontStyle === 'italic') {

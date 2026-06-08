@@ -139,7 +139,7 @@ export function EditView({
                 onChange={(e) => onDataChange({ ...data, countdownSubtitle: e.target.value })}
                 placeholder="Falta cada vez menos"
               />
-              <TypographySelector section="countdown" element="body" data={data} onDataChange={onDataChange} />
+              <TypographySelector section="countdown" element="subtitle" data={data} onDataChange={onDataChange} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="dateISO">Fecha y hora (ISO)</Label>

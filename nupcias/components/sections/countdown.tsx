@@ -30,13 +30,13 @@ export function Countdown({ event }: CountdownProps) {
         <Reveal className="text-center">
           <p
             className="text-xs font-light uppercase tracking-[0.4em] text-primary-foreground/70"
-            style={getTypographyStyle(countdownTypography?.label)}
+            style={getTypographyStyle(countdownTypography?.title)}
           >
             {event.countdownTitle || 'Cuenta regresiva'}
           </p>
           <h2
             className="mt-4 font-serif text-3xl font-light tracking-tight md:text-4xl"
-            style={getTypographyStyle(countdownTypography?.title)}
+            style={getTypographyStyle(countdownTypography?.subtitle)}
           >
             {timeLeft?.isPast ? '¡Hoy es el gran día!' : (event.countdownSubtitle || 'Falta cada vez menos')}
           </h2>

@@ -65,7 +65,7 @@ export const availableFonts: FontOption[] = [
     category: 'sans-serif',
     googleFont: 'Open Sans:wght@300;400;500;600;700',
   },
-  // Display fonts
+  // Handwriting fonts
   {
     id: 'dancing-script',
     name: 'Dancing Script',
@@ -98,8 +98,8 @@ export const availableFonts: FontOption[] = [
 
 export function getGoogleFontsURL(fontIds: string[]): string {
   const fonts = availableFonts.filter(f => fontIds.includes(f.id) && f.googleFont)
-  const fontFamilies = fonts.map(f => f.googleFont).join('&')
-  return `https://fonts.googleapis.com/css2?family=${fontFamilies}&display=swap`
+  const fontFamilies = fonts.map(f => `family=${f.googleFont}`).join('&')
+  return `https://fonts.googleapis.com/css2?${fontFamilies}&display=swap`
 }
 
 export function getFontById(id: string): FontOption | undefined {

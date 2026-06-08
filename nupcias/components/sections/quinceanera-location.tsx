@@ -14,8 +14,8 @@ export function QuinceaneraLocation({ event }: QuinceaneraLocationProps) {
 
   const locationTypography = event.typography?.location
   const query = encodeURIComponent(event.location.mapQuery)
-  const embedSrc = `https://www.google.com/maps?q=${query}&amp;output=embed`
-  const directionsUrl = `https://www.google.com/maps/dir/?api=1&amp;destination=${query}`
+  const embedSrc = `https://www.google.com/maps?q=${query}&output=embed`
+  const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${query}`
 
   return (
     <section id="ubicacion" className="bg-gradient-to-br from-purple-100 via-pink-100 to-rose-100 py-24 md:py-36">
