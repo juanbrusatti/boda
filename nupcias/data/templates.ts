@@ -1,5 +1,6 @@
 import type { EventConfig } from '@/types/event'
 import { event as classicTemplate } from './event'
+import { birthday as birthdayTemplate } from './birthday'
 
 export interface Template {
   id: string
@@ -18,5 +19,13 @@ export const templates: Template[] = [
     thumbnail: '/images/gallery-1.png',
     category: 'wedding',
     data: classicTemplate,
+  },
+  {
+    id: 'birthday-party',
+    name: 'Fiesta de Cumpleaños',
+    description: 'Divertida y festiva, ideal para celebrar cumpleaños especiales',
+    thumbnail: '/images/gallery-2.png',
+    category: 'birthday',
+    data: birthdayTemplate,
   },
 ]
