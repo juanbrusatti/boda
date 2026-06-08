@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { ArrowLeft, Loader2, Plus, Trash } from 'lucide-react'
 import { availableIcons } from '@/lib/icons'
 import { StoryEditor } from './editors/story-editor'
+import { LocationEditor } from './editors/location-editor'
 import type { Template } from '@/data/templates'
 import type { EventConfig } from '@/types/event'
 
@@ -148,24 +149,98 @@ export function EditView({
           </CardContent>
         </Card>
 
+        <StoryEditor data={data} onDataChange={onDataChange} />
+
+        <LocationEditor data={data} onDataChange={onDataChange} />
+
         <Card>
           <CardHeader>
-            <CardTitle>Descripción</CardTitle>
+            <CardTitle>Galería</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="description">Descripción del evento</Label>
-              <Textarea
-                id="description"
-                value={data.description}
-                onChange={(e) => onDataChange({ ...data, description: e.target.value })}
-                rows={6}
+            <div className="flex items-center justify-between">
+              <Label htmlFor="showGallery">Mostrar sección</Label>
+              <input
+                type="checkbox"
+                id="showGallery"
+                checked={data.showGallery !== false}
+                onChange={(e) => onDataChange({ ...data, showGallery: e.target.checked })}
+                className="h-4 w-4"
               />
             </div>
           </CardContent>
         </Card>
 
-        <StoryEditor data={data} onDataChange={onDataChange} />
+        <Card>
+          <CardHeader>
+            <CardTitle>RSVP</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="showRSVP">Mostrar sección</Label>
+              <input
+                type="checkbox"
+                id="showRSVP"
+                checked={data.showRSVP !== false}
+                onChange={(e) => onDataChange({ ...data, showRSVP: e.target.checked })}
+                className="h-4 w-4"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="rsvpHeading">Título</Label>
+              <Input
+                id="rsvpHeading"
+                value={data.rsvp.heading || ''}
+                onChange={(e) => onDataChange({
+                  ...data,
+                  rsvp: { ...data.rsvp, heading: e.target.value }
+                })}
+                placeholder="Confirmá tu asistencia"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="rsvpSubheading">Subtítulo</Label>
+              <Textarea
+                id="rsvpSubheading"
+                value={data.rsvp.subheading || ''}
+                onChange={(e) => onDataChange({
+                  ...data,
+                  rsvp: { ...data.rsvp, subheading: e.target.value }
+                })}
+                placeholder="Tu presencia es el mejor regalo..."
+                rows={3}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="rsvpButtonLabel">Texto del botón</Label>
+              <Input
+                id="rsvpButtonLabel"
+                value={data.rsvp.buttonLabel || ''}
+                onChange={(e) => onDataChange({
+                  ...data,
+                  rsvp: { ...data.rsvp, buttonLabel: e.target.value }
+                })}
+                placeholder="Confirmar asistencia"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="rsvpDeadline">Fecha límite</Label>
+              <Input
+                id="rsvpDeadline"
+                value={data.rsvp.deadline || ''}
+                onChange={(e) => onDataChange({
+                  ...data,
+                  rsvp: { ...data.rsvp, deadline: e.target.value }
+                })}
+                placeholder="Te pedimos confirmar antes del..."
+              />
+            </div>
+          </CardContent>
+        </Card>
 
         <Card className="lg:col-span-2">
           <CardHeader>
@@ -253,47 +328,6 @@ export function EditView({
               <Plus className="mr-2 h-4 w-4" />
               Agregar detalle
             </Button>
-          </CardContent>
-        </Card>
-
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Configuración RSVP</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="rsvpHeading">Título de RSVP</Label>
-              <Input
-                id="rsvpHeading"
-                value={data.rsvp?.heading || ''}
-                onChange={(e) => onDataChange({ ...data, rsvp: { ...data.rsvp, heading: e.target.value } })}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="rsvpSubheading">Subtítulo de RSVP</Label>
-              <Textarea
-                id="rsvpSubheading"
-                value={data.rsvp?.subheading || ''}
-                onChange={(e) => onDataChange({ ...data, rsvp: { ...data.rsvp, subheading: e.target.value } })}
-                rows={3}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="rsvpButton">Texto del botón</Label>
-              <Input
-                id="rsvpButton"
-                value={data.rsvp?.buttonLabel || ''}
-                onChange={(e) => onDataChange({ ...data, rsvp: { ...data.rsvp, buttonLabel: e.target.value } })}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="rsvpDeadline">Fecha límite</Label>
-              <Input
-                id="rsvpDeadline"
-                value={data.rsvp?.deadline || ''}
-                onChange={(e) => onDataChange({ ...data, rsvp: { ...data.rsvp, deadline: e.target.value } })}
-              />
-            </div>
           </CardContent>
         </Card>
       </div>

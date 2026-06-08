@@ -16,6 +16,10 @@ const spans = [
 ]
 
 export function Gallery({ event }: GalleryProps) {
+  if (event.showGallery === false) {
+    return null
+  }
+
   return (
     <section id="galeria" className="bg-secondary py-24 md:py-36">
       <div className="mx-auto max-w-6xl px-6">

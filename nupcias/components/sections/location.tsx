@@ -7,6 +7,10 @@ interface LocationProps {
 }
 
 export function Location({ event }: LocationProps) {
+  if (event.showLocation === false) {
+    return null
+  }
+
   const query = encodeURIComponent(event.location.mapQuery)
   // Ready to swap for a Google Maps Embed API key in the future.
   const embedSrc = `https://www.google.com/maps?q=${query}&output=embed`
@@ -28,12 +32,12 @@ export function Location({ event }: LocationProps) {
         </Reveal>
 
         <Reveal delay={150}>
-          <div className="mt-12 overflow-hidden rounded-md border border-border">
-            <div className="relative aspect-[16/10] w-full md:aspect-[21/9]">
+          <div className="mt-12 overflow-hidden rounded-xl border border-border/50 shadow-lg shadow-black/5">
+            <div className="relative aspect-[16/10] w-full md:aspect-[21/9] bg-muted/30">
               <iframe
                 title={`Mapa de ${event.location.venue}`}
                 src={embedSrc}
-                className="absolute inset-0 h-full w-full grayscale-[0.3]"
+                className="absolute inset-0 h-full w-full"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
                 allowFullScreen
