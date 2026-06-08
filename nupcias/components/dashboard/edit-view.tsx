@@ -7,6 +7,7 @@ import { ArrowLeft, Loader2, Plus, Trash } from 'lucide-react'
 import { availableIcons } from '@/lib/icons'
 import { StoryEditor } from './editors/story-editor'
 import { LocationEditor } from './editors/location-editor'
+import { TypographySelector } from './editors/typography-selector'
 import type { Template } from '@/data/templates'
 import type { EventConfig } from '@/types/event'
 
@@ -73,6 +74,7 @@ export function EditView({
                 value={data.title}
                 onChange={(e) => onDataChange({ ...data, title: e.target.value })}
               />
+              <TypographySelector section="hero" element="title" data={data} onDataChange={onDataChange} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="tagline">Subtítulo</Label>
@@ -81,6 +83,7 @@ export function EditView({
                 value={data.tagline}
                 onChange={(e) => onDataChange({ ...data, tagline: e.target.value })}
               />
+              <TypographySelector section="hero" element="subtitle" data={data} onDataChange={onDataChange} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="dateLabel">Fecha (texto)</Label>
@@ -89,6 +92,7 @@ export function EditView({
                 value={data.dateLabel}
                 onChange={(e) => onDataChange({ ...data, dateLabel: e.target.value })}
               />
+              <TypographySelector section="hero" element="body" data={data} onDataChange={onDataChange} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="locationLabel">Ubicación</Label>
@@ -97,6 +101,7 @@ export function EditView({
                 value={data.locationLabel}
                 onChange={(e) => onDataChange({ ...data, locationLabel: e.target.value })}
               />
+              <TypographySelector section="hero" element="label" data={data} onDataChange={onDataChange} />
             </div>
           </CardContent>
         </Card>
@@ -124,15 +129,17 @@ export function EditView({
                 onChange={(e) => onDataChange({ ...data, countdownTitle: e.target.value })}
                 placeholder="Cuenta regresiva"
               />
+              <TypographySelector section="countdown" element="title" data={data} onDataChange={onDataChange} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="countdownSubtitle">Titulo</Label>
+              <Label htmlFor="countdownSubtitle">Subtítulo</Label>
               <Input
                 id="countdownSubtitle"
                 value={data.countdownSubtitle || ''}
                 onChange={(e) => onDataChange({ ...data, countdownSubtitle: e.target.value })}
                 placeholder="Falta cada vez menos"
               />
+              <TypographySelector section="countdown" element="body" data={data} onDataChange={onDataChange} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="dateISO">Fecha y hora (ISO)</Label>
@@ -168,6 +175,14 @@ export function EditView({
                 className="h-4 w-4"
               />
             </div>
+            <div className="space-y-2">
+              <Label>Tipografía del título</Label>
+              <TypographySelector section="gallery" element="title" data={data} onDataChange={onDataChange} />
+            </div>
+            <div className="space-y-2">
+              <Label>Tipografía de las etiquetas</Label>
+              <TypographySelector section="gallery" element="label" data={data} onDataChange={onDataChange} />
+            </div>
           </CardContent>
         </Card>
 
@@ -198,6 +213,7 @@ export function EditView({
                 })}
                 placeholder="Confirmá tu asistencia"
               />
+              <TypographySelector section="rsvp" element="title" data={data} onDataChange={onDataChange} />
             </div>
 
             <div className="space-y-2">
@@ -212,6 +228,7 @@ export function EditView({
                 placeholder="Tu presencia es el mejor regalo..."
                 rows={3}
               />
+              <TypographySelector section="rsvp" element="body" data={data} onDataChange={onDataChange} />
             </div>
 
             <div className="space-y-2">
@@ -238,6 +255,7 @@ export function EditView({
                 })}
                 placeholder="Te pedimos confirmar antes del..."
               />
+              <TypographySelector section="rsvp" element="label" data={data} onDataChange={onDataChange} />
             </div>
           </CardContent>
         </Card>
@@ -330,6 +348,7 @@ export function EditView({
             </Button>
           </CardContent>
         </Card>
+
       </div>
     </div>
   )

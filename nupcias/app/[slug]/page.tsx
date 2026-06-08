@@ -8,6 +8,13 @@ import { Gallery } from '@/components/sections/gallery'
 import { Location } from '@/components/sections/location'
 import { Footer } from '@/components/sections/footer'
 import { Confirmation } from '@/components/sections/confirmation'
+import { QuinceaneraHero } from '@/components/sections/quinceanera-hero'
+import { QuinceaneraCountdown } from '@/components/sections/quinceanera-countdown'
+import { QuinceaneraStory } from '@/components/sections/quinceanera-story'
+import { QuinceaneraGallery } from '@/components/sections/quinceanera-gallery'
+import { QuinceaneraLocation } from '@/components/sections/quinceanera-location'
+import { QuinceaneraConfirmation } from '@/components/sections/quinceanera-confirmation'
+import { QuinceaneraFooter } from '@/components/sections/quinceanera-footer'
 
 interface PageProps {
   params: Promise<{
@@ -28,7 +35,25 @@ export default async function PublicInvitationPage({ params }: PageProps) {
   }
 
   const eventConfig = result.data.config
+  const templateId = result.data.template_id
 
+  // Render different components based on template
+  if (templateId === 'quinceanera-party') {
+    return (
+      <div className="min-h-screen bg-background">
+        <QuinceaneraHero event={eventConfig} />
+        <EventInfo event={eventConfig} />
+        <QuinceaneraCountdown event={eventConfig} />
+        <QuinceaneraStory event={eventConfig} />
+        <QuinceaneraGallery event={eventConfig} />
+        <QuinceaneraLocation event={eventConfig} />
+        <QuinceaneraConfirmation event={eventConfig} />
+        <QuinceaneraFooter event={eventConfig} />
+      </div>
+    )
+  }
+
+  // Default template (classic wedding, birthday, etc.)
   return (
     <div className="min-h-screen bg-background">
       <Hero event={eventConfig} />

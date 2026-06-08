@@ -73,4 +73,37 @@ export const birthday: EventConfig = {
     name: 'Invita',
     tagline: 'Invitaciones digitales que se sienten inolvidables',
   },
+  typography: {
+    hero: {
+      title: { fontFamily: 'Poppins', fontWeight: 700 },
+      subtitle: { fontFamily: 'Montserrat', fontWeight: 400 },
+      body: { fontFamily: 'Open Sans', fontWeight: 400 },
+    },
+    countdown: {
+      title: { fontFamily: 'Poppins', fontWeight: 600 },
+      body: { fontFamily: 'Montserrat', fontWeight: 400 },
+      label: { fontFamily: 'Open Sans', fontWeight: 400 },
+    },
+    story: {
+      title: { fontFamily: 'Poppins', fontWeight: 600 },
+      subtitle: { fontFamily: 'Montserrat', fontWeight: 400 },
+      body: { fontFamily: 'Open Sans', fontWeight: 400 },
+    },
+    gallery: {
+      title: { fontFamily: 'Poppins', fontWeight: 600 },
+      label: { fontFamily: 'Montserrat', fontWeight: 400 },
+    },
+    location: {
+      title: { fontFamily: 'Poppins', fontWeight: 600 },
+      body: { fontFamily: 'Open Sans', fontWeight: 400 },
+    },
+    rsvp: {
+      title: { fontFamily: 'Poppins', fontWeight: 600 },
+      body: { fontFamily: 'Montserrat', fontWeight: 400 },
+      label: { fontFamily: 'Open Sans', fontWeight: 400 },
+    },
+    footer: {
+      body: { fontFamily: 'Open Sans', fontWeight: 400 },
+    },
+  },
 }

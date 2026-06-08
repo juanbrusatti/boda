@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { TypographySelector } from './typography-selector'
 import type { EventConfig } from '@/types/event'
 
 interface LocationEditorProps {
@@ -38,6 +39,7 @@ export function LocationEditor({ data, onDataChange }: LocationEditorProps) {
             })}
             placeholder="Salón Los Robles"
           />
+          <TypographySelector section="location" element="title" data={data} onDataChange={onDataChange} />
         </div>
 
         <div className="space-y-2">
@@ -52,6 +54,7 @@ export function LocationEditor({ data, onDataChange }: LocationEditorProps) {
             placeholder="Camino de los Robles 1450, Buenos Aires, Argentina"
             rows={3}
           />
+          <TypographySelector section="location" element="body" data={data} onDataChange={onDataChange} />
         </div>
 
         <div className="space-y-2">

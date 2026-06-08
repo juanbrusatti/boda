@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import { Reveal } from '@/components/reveal'
+import { getTypographyStyle } from '@/lib/typography-utils'
 import type { EventConfig } from '@/types/event'
 
 interface GalleryProps {
@@ -20,14 +21,22 @@ export function Gallery({ event }: GalleryProps) {
     return null
   }
 
+  const galleryTypography = event.typography?.gallery
+
   return (
     <section id="galeria" className="bg-secondary py-24 md:py-36">
       <div className="mx-auto max-w-6xl px-6">
         <Reveal className="text-center">
-          <p className="text-xs font-light uppercase tracking-[0.4em] text-muted-foreground">
+          <p
+            className="text-xs font-light uppercase tracking-[0.4em] text-muted-foreground"
+            style={getTypographyStyle(galleryTypography?.label)}
+          >
             Momentos
           </p>
-          <h2 className="mt-5 text-balance font-serif text-4xl font-light tracking-tight text-foreground md:text-5xl">
+          <h2
+            className="mt-5 text-balance font-serif text-4xl font-light tracking-tight text-foreground md:text-5xl"
+            style={getTypographyStyle(galleryTypography?.title)}
+          >
             Galería
           </h2>
         </Reveal>
@@ -35,7 +44,7 @@ export function Gallery({ event }: GalleryProps) {
         <div className="mt-16 grid auto-rows-[16rem] grid-cols-1 gap-4 md:grid-cols-12 md:auto-rows-[15rem]">
           {event.gallery.map((image, i) => (
             <Reveal
-              key={image.src}
+              key={i}
               delay={i * 80}
               className={cn(
                 'group relative overflow-hidden rounded-md',

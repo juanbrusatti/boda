@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { TextArrayEditor } from './text-array-editor'
 import { ImageArrayEditor } from './image-array-editor'
+import { TypographySelector } from './typography-selector'
 import type { EventConfig } from '@/types/event'
 
 interface StoryEditorProps {
@@ -36,6 +37,7 @@ export function StoryEditor({ data, onDataChange }: StoryEditorProps) {
             onChange={(e) => onDataChange({ ...data, storySubtitle: e.target.value })}
             placeholder="Dos caminos que se vuelven uno"
           />
+          <TypographySelector section="story" element="title" data={data} onDataChange={onDataChange} />
         </div>
 
         <div className="space-y-2">
@@ -46,6 +48,7 @@ export function StoryEditor({ data, onDataChange }: StoryEditorProps) {
             onChange={(e) => onDataChange({ ...data, storyTitle: e.target.value })}
             placeholder="Nuestra historia"
           />
+          <TypographySelector section="story" element="subtitle" data={data} onDataChange={onDataChange} />
         </div>
 
         <ImageArrayEditor
@@ -63,6 +66,11 @@ export function StoryEditor({ data, onDataChange }: StoryEditorProps) {
           textarea
           rows={4}
         />
+
+        <div className="space-y-2">
+          <Label>Tipografía del cuerpo</Label>
+          <TypographySelector section="story" element="body" data={data} onDataChange={onDataChange} />
+        </div>
       </CardContent>
     </Card>
   )

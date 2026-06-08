@@ -23,6 +23,43 @@ export interface EventLocation {
   mapQuery: string
 }
 
+export interface TypographyConfig {
+  /** Font family name */
+  fontFamily: string
+  /** Font weight (100-900) */
+  fontWeight?: number
+  /** Font style (normal, italic) */
+  fontStyle?: 'normal' | 'italic'
+}
+
+export interface SectionTypography {
+  /** Typography for main title */
+  title?: TypographyConfig
+  /** Typography for subtitle */
+  subtitle?: TypographyConfig
+  /** Typography for body text */
+  body?: TypographyConfig
+  /** Typography for labels/small text */
+  label?: TypographyConfig
+}
+
+export interface EventTypography {
+  /** Hero section typography */
+  hero?: SectionTypography
+  /** Countdown section typography */
+  countdown?: SectionTypography
+  /** Story section typography */
+  story?: SectionTypography
+  /** Gallery section typography */
+  gallery?: SectionTypography
+  /** Location section typography */
+  location?: SectionTypography
+  /** RSVP section typography */
+  rsvp?: SectionTypography
+  /** Footer typography */
+  footer?: SectionTypography
+}
+
 export interface EventConfig {
   /** Primary title, e.g. "María & Juan" */
   title: string
@@ -79,6 +116,8 @@ export interface EventConfig {
     name: string
     tagline: string
   }
+  /** Typography configuration for each section */
+  typography?: EventTypography
 }
 
 /**
