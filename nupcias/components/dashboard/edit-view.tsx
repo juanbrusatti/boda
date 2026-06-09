@@ -106,7 +106,7 @@ export function EditView({
             </div>
             <div className="space-y-2">
               <Label>Colores de la sección</Label>
-              <ColorSelector section="hero" data={data} onDataChange={onDataChange} />
+              <ColorSelector section="hero" element="title" data={data} onDataChange={onDataChange} />
             </div>
           </CardContent>
         </Card>
@@ -160,7 +160,7 @@ export function EditView({
             </div>
             <div className="space-y-2">
               <Label>Colores de la sección</Label>
-              <ColorSelector section="countdown" data={data} onDataChange={onDataChange} />
+              <ColorSelector section="countdown" element="title" data={data} onDataChange={onDataChange} />
             </div>
           </CardContent>
         </Card>
@@ -194,7 +194,7 @@ export function EditView({
             </div>
             <div className="space-y-2">
               <Label>Colores de la sección</Label>
-              <ColorSelector section="gallery" data={data} onDataChange={onDataChange} />
+              <ColorSelector section="gallery" element="title" data={data} onDataChange={onDataChange} />
             </div>
           </CardContent>
         </Card>
@@ -272,7 +272,7 @@ export function EditView({
             </div>
             <div className="space-y-2">
               <Label>Colores de la sección</Label>
-              <ColorSelector section="rsvp" data={data} onDataChange={onDataChange} />
+              <ColorSelector section="rsvp" element="title" data={data} onDataChange={onDataChange} />
             </div>
           </CardContent>
         </Card>

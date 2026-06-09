@@ -2,7 +2,7 @@ import { Label } from '@/components/ui/label'
 import type { EventConfig } from '@/types/event'
 
 interface ColorSelectorProps {
-  section: keyof NonNullable<EventConfig['colors']>
+  section: keyof NonNullable<EventConfig['typography']>
   element?: 'title' | 'subtitle' | 'body' | 'label'
   data: EventConfig
   onDataChange: (data: EventConfig) => void
@@ -10,22 +10,31 @@ interface ColorSelectorProps {
 
 export function ColorSelector({ section, element, data, onDataChange }: ColorSelectorProps) {
   const updateColor = (value: string) => {
-    if (!element) return
-    
     const newTypography = {
       ...data.typography,
       [section]: {
         ...(data.typography?.[section] || {}),
+      },
+    }
+    
+    if (element) {
+      newTypography[section] = {
+        ...newTypography[section],
         [element]: {
           ...(data.typography?.[section]?.[element] || {}),
           color: value,
         },
-      },
+      }
+    } else {
+      newTypography[section].color = value
     }
+    
     onDataChange({ ...data, typography: newTypography })
   }
 
-  const currentColor = element ? data.typography?.[section]?.[element]?.color : undefined
+  const currentColor = element 
+    ? data.typography?.[section]?.[element]?.color
+    : data.typography?.[section]?.color
 
   return (
     <div className="space-y-4">
