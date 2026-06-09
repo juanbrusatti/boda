@@ -93,6 +93,10 @@ export interface EventColors {
   rsvp?: SectionColors
   /** Footer section colors */
   footer?: SectionColors
+  /** Details section colors */
+  details?: SectionColors
+  /** Details section typography */
+  detailsTypography?: SectionTypography
 }
 
 export interface EventConfig {

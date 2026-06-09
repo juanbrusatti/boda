@@ -1,3 +1,5 @@
+'use client'
+
 import Image from 'next/image'
 import { Heart, Sparkles } from 'lucide-react'
 import { Reveal } from '@/components/reveal'

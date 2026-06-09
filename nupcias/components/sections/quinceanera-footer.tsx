@@ -1,3 +1,5 @@
+'use client'
+
 import { Heart, Sparkles } from 'lucide-react'
 import { getTypographyStyle } from '@/lib/typography-utils'
 import { getColorStyle } from '@/lib/color-utils'
