@@ -16,7 +16,6 @@ import { QuinceaneraGallery } from '@/components/sections/quinceanera-gallery'
 import { QuinceaneraLocation } from '@/components/sections/quinceanera-location'
 import { QuinceaneraConfirmation } from '@/components/sections/quinceanera-confirmation'
 import { QuinceaneraFooter } from '@/components/sections/quinceanera-footer'
-import { EditMode } from './edit-mode'
 import { EditProvider } from './edit-context'
 import type { EventConfig } from '@/types/event'
 
@@ -43,31 +42,29 @@ export function TemplateWrapper({ eventConfig, templateId, isEditMode = false, o
 
   return (
     <EditProvider isEditMode={isEditMode} event={event} onEventChange={handleEventChange}>
-      <EditMode event={event} onEventChange={handleEventChange}>
-        {templateId === 'quinceanera-party' ? (
-          <div className="min-h-screen bg-background">
-            <QuinceaneraHero event={event} />
-            <EventInfo event={event} />
-            <QuinceaneraCountdown event={event} />
-            <QuinceaneraStory event={event} />
-            <QuinceaneraGallery event={event} />
-            <QuinceaneraLocation event={event} />
-            <QuinceaneraConfirmation event={event} />
-            <QuinceaneraFooter event={event} />
-          </div>
-        ) : (
-          <div className="min-h-screen bg-background">
-            <Hero event={event} />
-            <EventInfo event={event} />
-            <Countdown event={event} />
-            <Story event={event} />
-            <Gallery event={event} />
-            <Location event={event} />
-            <Confirmation event={event} />
-            <Footer event={event} />
-          </div>
-        )}
-      </EditMode>
+      {templateId === 'quinceanera-party' ? (
+        <div className="min-h-screen bg-background">
+          <QuinceaneraHero event={event} />
+          <EventInfo event={event} />
+          <QuinceaneraCountdown event={event} />
+          <QuinceaneraStory event={event} />
+          <QuinceaneraGallery event={event} />
+          <QuinceaneraLocation event={event} />
+          <QuinceaneraConfirmation event={event} />
+          <QuinceaneraFooter event={event} />
+        </div>
+      ) : (
+        <div className="min-h-screen bg-background">
+          <Hero event={event} />
+          <EventInfo event={event} />
+          <Countdown event={event} />
+          <Story event={event} />
+          <Gallery event={event} />
+          <Location event={event} />
+          <Confirmation event={event} />
+          <Footer event={event} />
+        </div>
+      )}
     </EditProvider>
   )
 }

@@ -165,6 +165,7 @@ export function EditableText({
             <div className="space-y-4">
               <ColorSelector
                 section={section}
+                element={element}
                 data={data}
                 onDataChange={onDataChange}
               />

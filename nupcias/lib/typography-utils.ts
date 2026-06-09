@@ -7,6 +7,7 @@ export function getTypographyStyle(config?: TypographyConfig): React.CSSProperti
     fontFamily: config.fontFamily,
     fontWeight: config.fontWeight,
     fontStyle: config.fontStyle,
+    color: config.color,
   }
 }
 

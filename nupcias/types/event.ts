@@ -30,6 +30,8 @@ export interface TypographyConfig {
   fontWeight?: 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900
   /** Font style (normal, italic) */
   fontStyle?: 'normal' | 'italic'
+  /** Text color for this specific element */
+  color?: string
 }
 
 export interface SectionTypography {
