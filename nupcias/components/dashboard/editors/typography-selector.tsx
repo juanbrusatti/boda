@@ -1,5 +1,4 @@
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { availableFonts } from '@/lib/fonts'
 import type { EventConfig } from '@/types/event'
 
@@ -28,57 +27,49 @@ export function TypographySelector({ section, element, data, onDataChange }: Typ
   const currentConfig = data.typography?.[section]?.[element]
 
   return (
-    <div className="grid grid-cols-3 gap-2 p-3 bg-muted/50 rounded-lg">
-      <div className="space-y-1">
-        <Label className="text-xs">Fuente</Label>
-        <Select
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <Label className="text-xs font-medium text-gray-900">Fuente</Label>
+        <select
           value={currentConfig?.fontFamily || ''}
-          onValueChange={(value) => updateTypography('fontFamily', value)}
+          onChange={(e) => updateTypography('fontFamily', e.target.value)}
+          className="w-full h-10 px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          style={{ color: '#111827', backgroundColor: '#ffffff' }}
         >
-          <SelectTrigger className="h-8 text-xs">
-            <SelectValue placeholder="Fuente" />
-          </SelectTrigger>
-          <SelectContent>
-            {availableFonts.map((font) => (
-              <SelectItem key={font.id} value={font.family} className="text-xs">
-                {font.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          <option value="">Seleccionar fuente</option>
+          {availableFonts.map((font) => (
+            <option key={font.id} value={font.family}>
+              {font.name}
+            </option>
+          ))}
+        </select>
       </div>
-      <div className="space-y-1">
-        <Label className="text-xs">Peso</Label>
-        <Select
+      <div className="space-y-2">
+        <Label className="text-xs font-medium text-gray-900">Peso</Label>
+        <select
           value={String(currentConfig?.fontWeight || 400)}
-          onValueChange={(value) => updateTypography('fontWeight', parseInt(value))}
+          onChange={(e) => updateTypography('fontWeight', parseInt(e.target.value))}
+          className="w-full h-10 px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          style={{ color: '#111827', backgroundColor: '#ffffff' }}
         >
-          <SelectTrigger className="h-8 text-xs">
-            <SelectValue placeholder="Peso" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="300" className="text-xs">300</SelectItem>
-            <SelectItem value="400" className="text-xs">400</SelectItem>
-            <SelectItem value="500" className="text-xs">500</SelectItem>
-            <SelectItem value="600" className="text-xs">600</SelectItem>
-            <SelectItem value="700" className="text-xs">700</SelectItem>
-          </SelectContent>
-        </Select>
+          <option value="300">300 (Light)</option>
+          <option value="400">400 (Normal)</option>
+          <option value="500">500 (Medium)</option>
+          <option value="600">600 (SemiBold)</option>
+          <option value="700">700 (Bold)</option>
+        </select>
       </div>
-      <div className="space-y-1">
-        <Label className="text-xs">Estilo</Label>
-        <Select
+      <div className="space-y-2">
+        <Label className="text-xs font-medium text-gray-900">Estilo</Label>
+        <select
           value={currentConfig?.fontStyle || 'normal'}
-          onValueChange={(value) => updateTypography('fontStyle', value)}
+          onChange={(e) => updateTypography('fontStyle', e.target.value)}
+          className="w-full h-10 px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          style={{ color: '#111827', backgroundColor: '#ffffff' }}
         >
-          <SelectTrigger className="h-8 text-xs">
-            <SelectValue placeholder="Estilo" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="normal" className="text-xs">Normal</SelectItem>
-            <SelectItem value="italic" className="text-xs">Itálica</SelectItem>
-          </SelectContent>
-        </Select>
+          <option value="normal">Normal</option>
+          <option value="italic">Itálica</option>
+        </select>
       </div>
     </div>
   )

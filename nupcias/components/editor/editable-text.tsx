@@ -35,10 +35,12 @@ export function EditableText({
   const [showPanel, setShowPanel] = useState(false)
   const [activeTab, setActiveTab] = useState<'text' | 'typography' | 'color'>('text')
   const contentRef = useRef<HTMLDivElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (contentRef.current && !contentRef.current.contains(event.target as Node)) {
+      if (contentRef.current && !contentRef.current.contains(event.target as Node) &&
+          panelRef.current && !panelRef.current.contains(event.target as Node)) {
         setIsEditing(false)
         setShowPanel(false)
       }
@@ -86,9 +88,13 @@ export function EditableText({
       </div>
 
       {showPanel && (
-        <div className="absolute z-50 bg-white rounded-lg shadow-2xl border border-gray-200 p-4 w-96 top-full left-0 mt-2">
+        <div 
+          ref={panelRef}
+          className="absolute z-[9999] bg-white rounded-lg shadow-2xl border border-gray-200 p-4 w-96 top-full left-0 mt-2"
+          style={{ backgroundColor: 'white' }}
+        >
           <div className="flex items-center justify-between mb-4">
-            <span className="text-sm font-medium text-gray-700">Editar elemento</span>
+            <span className="text-sm font-medium text-gray-900">Editar elemento</span>
             <button
               onClick={() => {
                 setIsEditing(false)
@@ -145,20 +151,24 @@ export function EditableText({
           )}
 
           {activeTab === 'typography' && element && data && onDataChange && section && (
-            <TypographySelector
-              section={section}
-              element={element}
-              data={data}
-              onDataChange={onDataChange}
-            />
+            <div className="space-y-4">
+              <TypographySelector
+                section={section}
+                element={element}
+                data={data}
+                onDataChange={onDataChange}
+              />
+            </div>
           )}
 
           {activeTab === 'color' && data && onDataChange && section && (
-            <ColorSelector
-              section={section}
-              data={data}
-              onDataChange={onDataChange}
-            />
+            <div className="space-y-4">
+              <ColorSelector
+                section={section}
+                data={data}
+                onDataChange={onDataChange}
+              />
+            </div>
           )}
         </div>
       )}
