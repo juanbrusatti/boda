@@ -1,5 +1,9 @@
+'use client'
+
 import { CalendarDays, Clock, MapPin, Sparkles, type LucideIcon } from 'lucide-react'
 import { Reveal } from '@/components/reveal'
+import { EditableText } from '@/components/editor/editable-text'
+import { useEditContext } from '@/components/editor/edit-context'
 import type { EventConfig } from '@/types/event'
 import { iconMap } from '@/lib/icons'
 
@@ -10,6 +14,16 @@ interface EventInfoProps {
 const defaultIcons = [CalendarDays, Clock, MapPin, Sparkles]
 
 export function EventInfo({ event }: EventInfoProps) {
+  const { isEditMode, onEventChange } = useEditContext()
+
+  const handleDetailChange = (index: number, field: 'label' | 'value' | 'caption', value: string) => {
+    if (onEventChange) {
+      const newDetails = [...event.details]
+      newDetails[index] = { ...newDetails[index], [field]: value }
+      onEventChange({ ...event, details: newDetails })
+    }
+  }
+
   return (
     <section id="evento" className="bg-secondary py-24 md:py-36">
       <div className="mx-auto max-w-6xl px-6">
@@ -31,14 +45,37 @@ export function EventInfo({ event }: EventInfoProps) {
                   <span className="flex size-14 items-center justify-center rounded-full border border-border text-accent transition-colors duration-500 group-hover:border-accent group-hover:bg-accent group-hover:text-accent-foreground">
                     <Icon className="size-5" strokeWidth={1.5} />
                   </span>
-                  <p className="mt-6 text-[10px] font-light uppercase tracking-[0.3em] text-muted-foreground">
-                    {detail.label}
-                  </p>
-                  <p className="mt-3 font-serif text-2xl font-light leading-tight text-foreground">
-                    {detail.value}
-                  </p>
+                  <EditableText
+                    value={detail.label}
+                    onChange={(value) => handleDetailChange(i, 'label', value)}
+                    section="details"
+                    element="label"
+                    data={event}
+                    onDataChange={onEventChange}
+                    isEditMode={isEditMode}
+                    className="mt-6 text-[10px] font-light uppercase tracking-[0.3em] text-muted-foreground"
+                  />
+                  <EditableText
+                    value={detail.value}
+                    onChange={(value) => handleDetailChange(i, 'value', value)}
+                    section="details"
+                    element="title"
+                    data={event}
+                    onDataChange={onEventChange}
+                    isEditMode={isEditMode}
+                    className="mt-3 font-serif text-2xl font-light leading-tight text-foreground"
+                  />
                   {detail.caption ? (
-                    <p className="mt-2 text-sm font-light text-muted-foreground">{detail.caption}</p>
+                    <EditableText
+                      value={detail.caption}
+                      onChange={(value) => handleDetailChange(i, 'caption', value)}
+                      section="details"
+                      element="body"
+                      data={event}
+                      onDataChange={onEventChange}
+                      isEditMode={isEditMode}
+                      className="mt-2 text-sm font-light text-muted-foreground"
+                    />
                   ) : null}
                 </div>
               </Reveal>

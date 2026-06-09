@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { X, Type, Palette, Move } from 'lucide-react'
 import { TypographySelector } from '@/components/dashboard/editors/typography-selector'
 import { ColorSelector } from '@/components/dashboard/editors/color-selector'
@@ -34,8 +35,14 @@ export function EditableText({
   const [isEditing, setIsEditing] = useState(false)
   const [showPanel, setShowPanel] = useState(false)
   const [activeTab, setActiveTab] = useState<'text' | 'typography' | 'color'>('text')
+  const [panelPosition, setPanelPosition] = useState({ top: 0, left: 0 })
+  const [isMounted, setIsMounted] = useState(false)
   const contentRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -51,6 +58,18 @@ export function EditableText({
       return () => document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [isEditing, showPanel])
+
+  useEffect(() => {
+    if (showPanel && contentRef.current) {
+      const rect = contentRef.current.getBoundingClientRect()
+      const scrollY = window.scrollY || window.pageYOffset
+      const scrollX = window.scrollX || window.pageXOffset
+      setPanelPosition({
+        top: rect.bottom + scrollY + 8,
+        left: rect.left + scrollX
+      })
+    }
+  }, [showPanel])
 
   const handleDoubleClick = () => {
     if (!isEditMode) return
@@ -87,11 +106,15 @@ export function EditableText({
         {children || value}
       </div>
 
-      {showPanel && (
+      {isMounted && showPanel && createPortal(
         <div 
           ref={panelRef}
-          className="absolute z-[9999] bg-white rounded-lg shadow-2xl border border-gray-200 p-4 w-96 top-full left-0 mt-2"
-          style={{ backgroundColor: 'white' }}
+          className="absolute z-[99999] bg-white rounded-lg shadow-2xl border border-gray-200 p-4 w-96"
+          style={{ 
+            backgroundColor: 'white',
+            top: panelPosition.top,
+            left: panelPosition.left
+          }}
         >
           <div className="flex items-center justify-between mb-4">
             <span className="text-sm font-medium text-gray-900">Editar elemento</span>
@@ -171,7 +194,8 @@ export function EditableText({
               />
             </div>
           )}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )

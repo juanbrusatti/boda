@@ -60,6 +60,8 @@ export interface EventTypography {
   rsvp?: SectionTypography
   /** Footer typography */
   footer?: SectionTypography
+  /** Details section typography */
+  details?: SectionTypography
 }
 
 export interface ColorConfig {
@@ -95,8 +97,6 @@ export interface EventColors {
   footer?: SectionColors
   /** Details section colors */
   details?: SectionColors
-  /** Details section typography */
-  detailsTypography?: SectionTypography
 }
 
 export interface EventConfig {
