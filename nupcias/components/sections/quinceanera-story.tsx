@@ -3,6 +3,8 @@ import { Heart, Sparkles } from 'lucide-react'
 import { Reveal } from '@/components/reveal'
 import { getTypographyStyle } from '@/lib/typography-utils'
 import { getColorStyle } from '@/lib/color-utils'
+import { EditableText } from '@/components/editor/editable-text'
+import { useEditContext } from '@/components/editor/edit-context'
 import type { EventConfig } from '@/types/event'
 
 interface QuinceaneraStoryProps {
@@ -10,12 +12,28 @@ interface QuinceaneraStoryProps {
 }
 
 export function QuinceaneraStory({ event }: QuinceaneraStoryProps) {
+  const { isEditMode, onEventChange } = useEditContext()
+  
   if (event.showStory === false) {
     return null
   }
 
   const storyTypography = event.typography?.story
   const storyColors = event.colors?.story?.colors
+
+  const handleTextChange = (field: keyof EventConfig, value: string) => {
+    if (onEventChange) {
+      onEventChange({ ...event, [field]: value })
+    }
+  }
+
+  const handleStoryChange = (index: number, newText: string) => {
+    if (onEventChange) {
+      const newStory = [...event.story]
+      newStory[index] = { ...newStory[index], text: newText }
+      onEventChange({ ...event, story: newStory })
+    }
+  }
 
   return (
     <section id="historia" className="py-24 md:py-36" style={getColorStyle(storyColors)}>
@@ -29,24 +47,39 @@ export function QuinceaneraStory({ event }: QuinceaneraStoryProps) {
             </div>
           </div>
 
-          <p
+          <EditableText
+            value="Mi historia"
+            onChange={() => {}}
+            section="story"
+            element="label"
+            data={event}
+            onDataChange={onEventChange}
+            isEditMode={isEditMode}
             className="text-xs font-light uppercase tracking-[0.4em] mb-4 opacity-70"
             style={getTypographyStyle(storyTypography?.label)}
-          >
-            Mi historia
-          </p>
-          <h2
+          />
+          <EditableText
+            value={event.storyTitle}
+            onChange={(value) => handleTextChange('storyTitle', value)}
+            section="story"
+            element="title"
+            data={event}
+            onDataChange={onEventChange}
+            isEditMode={isEditMode}
             className="text-4xl md:text-5xl font-serif font-bold mb-6"
             style={{ ...getTypographyStyle(storyTypography?.title), background: storyColors?.accent ? `linear-gradient(to right, ${storyColors.accent}, ${storyColors.accent}99)` : undefined, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
-          >
-            {event.storyTitle}
-          </h2>
-          <p
+          />
+          <EditableText
+            value={event.storySubtitle}
+            onChange={(value) => handleTextChange('storySubtitle', value)}
+            section="story"
+            element="subtitle"
+            data={event}
+            onDataChange={onEventChange}
+            isEditMode={isEditMode}
             className="text-lg font-light mb-12 opacity-80"
             style={getTypographyStyle(storyTypography?.subtitle)}
-          >
-            {event.storySubtitle}
-          </p>
+          />
         </Reveal>
 
         {event.storyImages && event.storyImages.length > 0 && (
@@ -68,12 +101,17 @@ export function QuinceaneraStory({ event }: QuinceaneraStoryProps) {
           {event.story.map((paragraph, index) => (
             <Reveal key={index} delay={300 + index * 100}>
               <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-current/20">
-                <p
+                <EditableText
+                  value={paragraph.text}
+                  onChange={(value) => handleStoryChange(index, value)}
+                  section="story"
+                  element="body"
+                  data={event}
+                  onDataChange={onEventChange}
+                  isEditMode={isEditMode}
                   className="text-lg leading-relaxed font-light"
                   style={getTypographyStyle(storyTypography?.body)}
-                >
-                  {paragraph.text}
-                </p>
+                />
               </div>
             </Reveal>
           ))}
@@ -82,12 +120,17 @@ export function QuinceaneraStory({ event }: QuinceaneraStoryProps) {
         <Reveal delay={600} className="text-center mt-12">
           <div className="inline-flex items-center gap-2 text-white px-8 py-4 rounded-full shadow-lg" style={{ background: storyColors?.accent ? `linear-gradient(to right, ${storyColors.accent}, ${storyColors.accent}99)` : undefined }}>
             <Heart className="w-5 h-5 fill-white" />
-            <span
+            <EditableText
+              value="15 años de amor y alegría"
+              onChange={() => {}}
+              section="story"
+              element="title"
+              data={event}
+              onDataChange={onEventChange}
+              isEditMode={isEditMode}
               className="font-serif text-lg"
               style={getTypographyStyle(storyTypography?.title)}
-            >
-              15 años de amor y alegría
-            </span>
+            />
             <Heart className="w-5 h-5 fill-white" />
           </div>
         </Reveal>

@@ -22,7 +22,12 @@ export function EditProvider({ children, isEditMode, event, onEventChange }: Edi
 export function useEditContext() {
   const context = useContext(EditContext)
   if (!context) {
-    throw new Error('useEditContext must be used within EditProvider')
+    // Return default values when not within EditProvider (e.g., public view)
+    return {
+      isEditMode: false,
+      event: {} as EventConfig,
+      onEventChange: () => {}
+    }
   }
   return context
 }

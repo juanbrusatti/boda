@@ -24,9 +24,10 @@ interface TemplateWrapperProps {
   eventConfig: EventConfig
   templateId: string
   isEditMode?: boolean
+  onDataChange?: (event: EventConfig) => void
 }
 
-export function TemplateWrapper({ eventConfig, templateId, isEditMode = false }: TemplateWrapperProps) {
+export function TemplateWrapper({ eventConfig, templateId, isEditMode = false, onDataChange }: TemplateWrapperProps) {
   const [event, setEvent] = useState<EventConfig>(eventConfig)
 
   useEffect(() => {
@@ -35,6 +36,9 @@ export function TemplateWrapper({ eventConfig, templateId, isEditMode = false }:
 
   const handleEventChange = (newEvent: EventConfig) => {
     setEvent(newEvent)
+    if (onDataChange) {
+      onDataChange(newEvent)
+    }
   }
 
   return (

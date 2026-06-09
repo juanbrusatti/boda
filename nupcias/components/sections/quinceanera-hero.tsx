@@ -3,6 +3,8 @@ import { Sparkles } from 'lucide-react'
 import { Reveal } from '@/components/reveal'
 import { getTypographyStyle } from '@/lib/typography-utils'
 import { getColorStyle } from '@/lib/color-utils'
+import { EditableText } from '@/components/editor/editable-text'
+import { useEditContext } from '@/components/editor/edit-context'
 import type { EventConfig } from '@/types/event'
 
 interface QuinceaneraHeroProps {
@@ -10,8 +12,15 @@ interface QuinceaneraHeroProps {
 }
 
 export function QuinceaneraHero({ event }: QuinceaneraHeroProps) {
+  const { isEditMode, onEventChange } = useEditContext()
   const heroTypography = event.typography?.hero
   const heroColors = event.colors?.hero?.colors
+
+  const handleTextChange = (field: keyof EventConfig, value: string) => {
+    if (onEventChange) {
+      onEventChange({ ...event, [field]: value })
+    }
+  }
 
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden" style={getColorStyle(heroColors)}>
@@ -27,39 +36,74 @@ export function QuinceaneraHero({ event }: QuinceaneraHeroProps) {
           <div className="flex justify-center mb-8">
             <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg">
               <Sparkles className="w-5 h-5" style={{ color: heroColors?.accent || '#ec4899' }} />
-              <span
+              <EditableText
+                value="Mis 15 Años"
+                onChange={() => {}}
+                section="hero"
+                element="label"
+                data={event}
+                onDataChange={onEventChange}
+                isEditMode={isEditMode}
                 className="text-sm font-medium tracking-wider uppercase"
                 style={getTypographyStyle(heroTypography?.label)}
-              >
-                Mis 15 Años
-              </span>
+              />
               <Sparkles className="w-5 h-5" style={{ color: heroColors?.accent || '#ec4899' }} />
             </div>
           </div>
 
-          <h1
+          <EditableText
+            value={event.title}
+            onChange={(value) => handleTextChange('title', value)}
+            section="hero"
+            element="title"
+            data={event}
+            onDataChange={onEventChange}
+            isEditMode={isEditMode}
             className="text-6xl md:text-8xl font-serif font-bold mb-6 leading-tight"
             style={{ ...getTypographyStyle(heroTypography?.title), background: heroColors?.accent ? `linear-gradient(to right, ${heroColors.accent}, ${heroColors.accent}99)` : undefined, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
-          >
-            {event.title}
-          </h1>
+          />
 
-          <p
+          <EditableText
+            value={event.tagline}
+            onChange={(value) => handleTextChange('tagline', value)}
+            section="hero"
+            element="subtitle"
+            data={event}
+            onDataChange={onEventChange}
+            isEditMode={isEditMode}
             className="text-xl md:text-2xl font-light mb-8 max-w-2xl mx-auto opacity-80"
             style={getTypographyStyle(heroTypography?.subtitle)}
-          >
-            {event.tagline}
-          </p>
+          />
 
           <div
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
             style={getTypographyStyle(heroTypography?.body)}
           >
             <div className="flex items-center gap-2 bg-white/70 backdrop-blur-sm px-6 py-3 rounded-full shadow-md">
-              <span className="font-semibold">{event.dateLabel}</span>
+              <EditableText
+                value={event.dateLabel}
+                onChange={(value) => handleTextChange('dateLabel', value)}
+                section="hero"
+                element="body"
+                data={event}
+                onDataChange={onEventChange}
+                isEditMode={isEditMode}
+                className="font-semibold"
+                style={getTypographyStyle(heroTypography?.body)}
+              />
             </div>
             <div className="flex items-center gap-2 bg-white/70 backdrop-blur-sm px-6 py-3 rounded-full shadow-md">
-              <span className="font-semibold">{event.locationLabel}</span>
+              <EditableText
+                value={event.locationLabel}
+                onChange={(value) => handleTextChange('locationLabel', value)}
+                section="hero"
+                element="body"
+                data={event}
+                onDataChange={onEventChange}
+                isEditMode={isEditMode}
+                className="font-semibold"
+                style={getTypographyStyle(heroTypography?.body)}
+              />
             </div>
           </div>
         </Reveal>

@@ -5,6 +5,8 @@ import { Reveal } from '@/components/reveal'
 import { useCountdown } from '@/lib/use-countdown'
 import { getTypographyStyle } from '@/lib/typography-utils'
 import { getColorStyle } from '@/lib/color-utils'
+import { EditableText } from '@/components/editor/editable-text'
+import { useEditContext } from '@/components/editor/edit-context'
 import type { EventConfig } from '@/types/event'
 
 interface QuinceaneraCountdownProps {
@@ -12,9 +14,16 @@ interface QuinceaneraCountdownProps {
 }
 
 export function QuinceaneraCountdown({ event }: QuinceaneraCountdownProps) {
+  const { isEditMode, onEventChange } = useEditContext()
   const timeLeft = useCountdown(event.dateISO)
   const countdownTypography = event.typography?.countdown
   const countdownColors = event.colors?.countdown?.colors
+
+  const handleTextChange = (field: keyof EventConfig, value: string) => {
+    if (onEventChange) {
+      onEventChange({ ...event, [field]: value })
+    }
+  }
 
   if (event.showCountdown === false) {
     return null
@@ -34,28 +43,43 @@ export function QuinceaneraCountdown({ event }: QuinceaneraCountdownProps) {
           <div className="flex justify-center mb-6">
             <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg">
               <Clock className="w-5 h-5" style={{ color: countdownColors?.accent || '#ec4899' }} />
-              <span
+              <EditableText
+                value="Cuenta regresiva"
+                onChange={() => {}}
+                section="countdown"
+                element="label"
+                data={event}
+                onDataChange={onEventChange}
+                isEditMode={isEditMode}
                 className="text-sm font-medium tracking-wider uppercase"
                 style={getTypographyStyle(countdownTypography?.label)}
-              >
-                Cuenta regresiva
-              </span>
+              />
               <Sparkles className="w-5 h-5" style={{ color: countdownColors?.accent || '#ec4899' }} />
             </div>
           </div>
 
-          <h2
+          <EditableText
+            value={event.countdownTitle}
+            onChange={(value) => handleTextChange('countdownTitle', value)}
+            section="countdown"
+            element="title"
+            data={event}
+            onDataChange={onEventChange}
+            isEditMode={isEditMode}
             className="text-4xl md:text-5xl font-serif font-bold mb-4"
             style={{ ...getTypographyStyle(countdownTypography?.title), background: countdownColors?.accent ? `linear-gradient(to right, ${countdownColors.accent}, ${countdownColors.accent}99)` : undefined, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
-          >
-            {event.countdownTitle}
-          </h2>
-          <p
+          />
+          <EditableText
+            value={timeLeft?.isPast ? '¡Hoy es el gran día!' : event.countdownSubtitle}
+            onChange={(value) => handleTextChange('countdownSubtitle', value)}
+            section="countdown"
+            element="subtitle"
+            data={event}
+            onDataChange={onEventChange}
+            isEditMode={isEditMode}
             className="text-lg font-light mb-12 opacity-80"
             style={getTypographyStyle(countdownTypography?.body)}
-          >
-            {timeLeft?.isPast ? '¡Hoy es el gran día!' : event.countdownSubtitle}
-          </p>
+          />
         </Reveal>
 
         <Reveal delay={200} className="bg-white/70 backdrop-blur-sm rounded-3xl p-8 md:p-12 shadow-2xl border border-current/20">
@@ -87,11 +111,31 @@ export function QuinceaneraCountdown({ event }: QuinceaneraCountdownProps) {
             >
               <div className="flex items-center gap-2">
                 <Calendar className="w-5 h-5" style={{ color: countdownColors?.accent || '#ec4899' }} />
-                <span className="font-semibold">{event.dateLabel}</span>
+                <EditableText
+                  value={event.dateLabel}
+                  onChange={(value) => handleTextChange('dateLabel', value)}
+                  section="countdown"
+                  element="body"
+                  data={event}
+                  onDataChange={onEventChange}
+                  isEditMode={isEditMode}
+                  className="font-semibold"
+                  style={getTypographyStyle(countdownTypography?.body)}
+                />
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="w-5 h-5" style={{ color: countdownColors?.accent || '#ec4899' }} />
-                <span className="font-semibold">{event.locationLabel}</span>
+                <EditableText
+                  value={event.locationLabel}
+                  onChange={(value) => handleTextChange('locationLabel', value)}
+                  section="countdown"
+                  element="body"
+                  data={event}
+                  onDataChange={onEventChange}
+                  isEditMode={isEditMode}
+                  className="font-semibold"
+                  style={getTypographyStyle(countdownTypography?.body)}
+                />
               </div>
             </div>
           </div>

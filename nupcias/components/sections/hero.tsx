@@ -1,3 +1,5 @@
+'use client'
+
 import Image from 'next/image'
 import { getTypographyStyle } from '@/lib/typography-utils'
 import { getColorStyle } from '@/lib/color-utils'

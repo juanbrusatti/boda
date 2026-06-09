@@ -5,6 +5,8 @@ import { Heart, Sparkles, Check } from 'lucide-react'
 import { Reveal } from '@/components/reveal'
 import { getTypographyStyle } from '@/lib/typography-utils'
 import { getColorStyle } from '@/lib/color-utils'
+import { EditableText } from '@/components/editor/editable-text'
+import { useEditContext } from '@/components/editor/edit-context'
 import type { EventConfig } from '@/types/event'
 
 interface QuinceaneraConfirmationProps {
@@ -13,8 +15,18 @@ interface QuinceaneraConfirmationProps {
 
 export function QuinceaneraConfirmation({ event }: QuinceaneraConfirmationProps) {
   const [confirmed, setConfirmed] = useState(false)
+  const { isEditMode, onEventChange } = useEditContext()
   const rsvpTypography = event.typography?.rsvp
   const rsvpColors = event.colors?.rsvp?.colors
+
+  const handleRsvpChange = (field: 'heading' | 'subheading' | 'buttonLabel' | 'deadline', value: string) => {
+    if (onEventChange) {
+      onEventChange({
+        ...event,
+        rsvp: { ...event.rsvp, [field]: value }
+      })
+    }
+  }
 
   if (event.showRSVP === false) {
     return null
@@ -32,19 +44,29 @@ export function QuinceaneraConfirmation({ event }: QuinceaneraConfirmationProps)
             </div>
           </div>
 
-          <h2
+          <EditableText
+            value={event.rsvp.heading}
+            onChange={(value) => handleRsvpChange('heading', value)}
+            section="rsvp"
+            element="title"
+            data={event}
+            onDataChange={onEventChange}
+            isEditMode={isEditMode}
             className="text-4xl md:text-5xl font-serif font-bold mb-6 leading-tight"
             style={getTypographyStyle(rsvpTypography?.title)}
-          >
-            {event.rsvp.heading}
-          </h2>
+          />
 
-          <p
+          <EditableText
+            value={event.rsvp.subheading}
+            onChange={(value) => handleRsvpChange('subheading', value)}
+            section="rsvp"
+            element="body"
+            data={event}
+            onDataChange={onEventChange}
+            isEditMode={isEditMode}
             className="text-lg font-light mb-10 max-w-md mx-auto leading-relaxed opacity-90"
             style={getTypographyStyle(rsvpTypography?.body)}
-          >
-            {event.rsvp.subheading}
-          </p>
+          />
 
           <div className="flex justify-center">
             <button
@@ -70,12 +92,17 @@ export function QuinceaneraConfirmation({ event }: QuinceaneraConfirmationProps)
             </button>
           </div>
 
-          <p
+          <EditableText
+            value={event.rsvp.deadline}
+            onChange={(value) => handleRsvpChange('deadline', value)}
+            section="rsvp"
+            element="label"
+            data={event}
+            onDataChange={onEventChange}
+            isEditMode={isEditMode}
             className="mt-10 text-sm font-light tracking-wider uppercase opacity-70"
             style={getTypographyStyle(rsvpTypography?.label)}
-          >
-            {event.rsvp.deadline}
-          </p>
+          />
         </Reveal>
       </div>
     </section>

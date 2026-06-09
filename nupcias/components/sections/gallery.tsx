@@ -1,8 +1,12 @@
+'use client'
+
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import { Reveal } from '@/components/reveal'
 import { getTypographyStyle } from '@/lib/typography-utils'
 import { getColorStyle } from '@/lib/color-utils'
+import { EditableText } from '@/components/editor/editable-text'
+import { useEditContext } from '@/components/editor/edit-context'
 import type { EventConfig } from '@/types/event'
 
 interface GalleryProps {
@@ -18,6 +22,8 @@ const spans = [
 ]
 
 export function Gallery({ event }: GalleryProps) {
+  const { isEditMode, onEventChange } = useEditContext()
+  
   if (event.showGallery === false) {
     return null
   }
@@ -29,18 +35,28 @@ export function Gallery({ event }: GalleryProps) {
     <section id="galeria" className="py-24 md:py-36" style={getColorStyle(galleryColors)}>
       <div className="mx-auto max-w-6xl px-6">
         <Reveal className="text-center">
-          <p
+          <EditableText
+            value="Momentos"
+            onChange={() => {}}
+            section="gallery"
+            element="label"
+            data={event}
+            onDataChange={onEventChange}
+            isEditMode={isEditMode}
             className="text-xs font-light uppercase tracking-[0.4em] opacity-60"
             style={getTypographyStyle(galleryTypography?.label)}
-          >
-            Momentos
-          </p>
-          <h2
+          />
+          <EditableText
+            value="Galería"
+            onChange={() => {}}
+            section="gallery"
+            element="title"
+            data={event}
+            onDataChange={onEventChange}
+            isEditMode={isEditMode}
             className="mt-5 text-balance font-serif text-4xl font-light tracking-tight md:text-5xl"
             style={getTypographyStyle(galleryTypography?.title)}
-          >
-            Galería
-          </h2>
+          />
         </Reveal>
 
         <div className="mt-16 grid auto-rows-[16rem] grid-cols-1 gap-4 md:grid-cols-12 md:auto-rows-[15rem]">

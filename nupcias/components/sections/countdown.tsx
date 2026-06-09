@@ -4,6 +4,8 @@ import { useCountdown } from '@/lib/use-countdown'
 import { Reveal } from '@/components/reveal'
 import { getTypographyStyle } from '@/lib/typography-utils'
 import { getColorStyle } from '@/lib/color-utils'
+import { EditableText } from '@/components/editor/editable-text'
+import { useEditContext } from '@/components/editor/edit-context'
 import type { EventConfig } from '@/types/event'
 
 interface CountdownProps {
@@ -11,9 +13,16 @@ interface CountdownProps {
 }
 
 export function Countdown({ event }: CountdownProps) {
+  const { isEditMode, onEventChange } = useEditContext()
   const timeLeft = useCountdown(event.dateISO)
   const countdownTypography = event.typography?.countdown
   const countdownColors = event.colors?.countdown?.colors
+
+  const handleTextChange = (field: keyof EventConfig, value: string) => {
+    if (onEventChange) {
+      onEventChange({ ...event, [field]: value })
+    }
+  }
 
   if (event.showCountdown === false) {
     return null
@@ -30,18 +39,28 @@ export function Countdown({ event }: CountdownProps) {
     <section className="py-20 md:py-28" style={getColorStyle(countdownColors)}>
       <div className="mx-auto max-w-4xl px-6">
         <Reveal className="text-center">
-          <p
+          <EditableText
+            value={event.countdownTitle || 'Cuenta regresiva'}
+            onChange={(value) => handleTextChange('countdownTitle', value)}
+            section="countdown"
+            element="title"
+            data={event}
+            onDataChange={onEventChange}
+            isEditMode={isEditMode}
             className="text-xs font-light uppercase tracking-[0.4em] opacity-70"
             style={getTypographyStyle(countdownTypography?.title)}
-          >
-            {event.countdownTitle || 'Cuenta regresiva'}
-          </p>
-          <h2
+          />
+          <EditableText
+            value={timeLeft?.isPast ? '¡Hoy es el gran día!' : (event.countdownSubtitle || 'Falta cada vez menos')}
+            onChange={(value) => handleTextChange('countdownSubtitle', value)}
+            section="countdown"
+            element="subtitle"
+            data={event}
+            onDataChange={onEventChange}
+            isEditMode={isEditMode}
             className="mt-4 font-serif text-3xl font-light tracking-tight md:text-4xl"
             style={getTypographyStyle(countdownTypography?.subtitle)}
-          >
-            {timeLeft?.isPast ? '¡Hoy es el gran día!' : (event.countdownSubtitle || 'Falta cada vez menos')}
-          </h2>
+          />
         </Reveal>
 
         <Reveal delay={150}>

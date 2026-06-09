@@ -1,6 +1,8 @@
 import { Heart, Sparkles } from 'lucide-react'
 import { getTypographyStyle } from '@/lib/typography-utils'
 import { getColorStyle } from '@/lib/color-utils'
+import { EditableText } from '@/components/editor/editable-text'
+import { useEditContext } from '@/components/editor/edit-context'
 import type { EventConfig } from '@/types/event'
 
 interface QuinceaneraFooterProps {
@@ -8,8 +10,18 @@ interface QuinceaneraFooterProps {
 }
 
 export function QuinceaneraFooter({ event }: QuinceaneraFooterProps) {
+  const { isEditMode, onEventChange } = useEditContext()
   const footerTypography = event.typography?.footer
   const footerColors = event.colors?.footer?.colors
+
+  const handleBrandChange = (field: 'name' | 'tagline', value: string) => {
+    if (onEventChange) {
+      onEventChange({
+        ...event,
+        brand: { ...event.brand, [field]: value }
+      })
+    }
+  }
 
   return (
     <footer className="py-12" style={getColorStyle(footerColors)}>
@@ -22,26 +34,41 @@ export function QuinceaneraFooter({ event }: QuinceaneraFooterProps) {
           </div>
         </div>
 
-        <h3
+        <EditableText
+          value={event.brand.name}
+          onChange={(value) => handleBrandChange('name', value)}
+          section="footer"
+          element="body"
+          data={event}
+          onDataChange={onEventChange}
+          isEditMode={isEditMode}
           className="text-2xl font-serif font-bold mb-2"
           style={getTypographyStyle(footerTypography?.body)}
-        >
-          {event.brand.name}
-        </h3>
-        <p
+        />
+        <EditableText
+          value={event.brand.tagline}
+          onChange={(value) => handleBrandChange('tagline', value)}
+          section="footer"
+          element="body"
+          data={event}
+          onDataChange={onEventChange}
+          isEditMode={isEditMode}
           className="font-light mb-6 opacity-80"
           style={getTypographyStyle(footerTypography?.body)}
-        >
-          {event.brand.tagline}
-        </p>
+        />
 
         <div className="border-t border-current/30 pt-6">
-          <p
+          <EditableText
+            value="Hecho con amor para celebrar momentos especiales"
+            onChange={() => {}}
+            section="footer"
+            element="label"
+            data={event}
+            onDataChange={onEventChange}
+            isEditMode={isEditMode}
             className="text-sm opacity-70"
             style={getTypographyStyle(footerTypography?.label)}
-          >
-            Hecho con amor para celebrar momentos especiales
-          </p>
+          />
         </div>
       </div>
     </footer>

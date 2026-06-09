@@ -1,7 +1,11 @@
+'use client'
+
 import { MapPin, Navigation } from 'lucide-react'
 import { Reveal } from '@/components/reveal'
 import { getTypographyStyle } from '@/lib/typography-utils'
 import { getColorStyle } from '@/lib/color-utils'
+import { EditableText } from '@/components/editor/editable-text'
+import { useEditContext } from '@/components/editor/edit-context'
 import type { EventConfig } from '@/types/event'
 
 interface LocationProps {
@@ -9,6 +13,8 @@ interface LocationProps {
 }
 
 export function Location({ event }: LocationProps) {
+  const { isEditMode, onEventChange } = useEditContext()
+  
   if (event.showLocation === false) {
     return null
   }
@@ -20,28 +26,52 @@ export function Location({ event }: LocationProps) {
   const embedSrc = `https://www.google.com/maps?q=${query}&output=embed`
   const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${query}`
 
+  const handleLocationChange = (field: 'venue' | 'address', value: string) => {
+    if (onEventChange) {
+      onEventChange({
+        ...event,
+        location: { ...event.location, [field]: value }
+      })
+    }
+  }
+
   return (
     <section id="ubicacion" className="py-24 md:py-36" style={getColorStyle(locationColors)}>
       <div className="mx-auto max-w-6xl px-6">
         <Reveal className="text-center">
-          <p
+          <EditableText
+            value="Cómo llegar"
+            onChange={() => {}}
+            section="location"
+            element="label"
+            data={event}
+            onDataChange={onEventChange}
+            isEditMode={isEditMode}
             className="text-xs font-light uppercase tracking-[0.4em] opacity-60"
             style={getTypographyStyle(locationTypography?.label)}
-          >
-            Cómo llegar
-          </p>
-          <h2
+          />
+          <EditableText
+            value={event.location.venue}
+            onChange={(value) => handleLocationChange('venue', value)}
+            section="location"
+            element="title"
+            data={event}
+            onDataChange={onEventChange}
+            isEditMode={isEditMode}
             className="mt-5 text-balance font-serif text-4xl font-light tracking-tight md:text-5xl"
             style={getTypographyStyle(locationTypography?.title)}
-          >
-            {event.location.venue}
-          </h2>
-          <p
+          />
+          <EditableText
+            value={event.location.address}
+            onChange={(value) => handleLocationChange('address', value)}
+            section="location"
+            element="body"
+            data={event}
+            onDataChange={onEventChange}
+            isEditMode={isEditMode}
             className="mx-auto mt-4 max-w-md text-pretty text-sm font-light leading-relaxed opacity-80"
             style={getTypographyStyle(locationTypography?.body)}
-          >
-            {event.location.address}
-          </p>
+          />
         </Reveal>
 
         <Reveal delay={150}>
