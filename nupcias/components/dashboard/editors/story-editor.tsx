@@ -75,7 +75,7 @@ export function StoryEditor({ data, onDataChange }: StoryEditorProps) {
 
         <div className="space-y-2">
           <Label>Colores de la sección</Label>
-          <ColorSelector section="story" data={data} onDataChange={onDataChange} />
+          <ColorSelector section="story" element="body" data={data} onDataChange={onDataChange} />
         </div>
       </CardContent>
     </Card>

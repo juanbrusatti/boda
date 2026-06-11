@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Edit2, Eye, Save } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { EditProvider } from '@/components/editor/edit-context'
 import type { EventConfig } from '@/types/event'
 
 interface EditModeProps {
@@ -31,8 +32,7 @@ export function EditMode({ event, onEventChange, children }: EditModeProps) {
             </Button>
             <Button
               onClick={() => {
-                // Aquí podrías agregar lógica para guardar
-                console.log('Guardando cambios:', event)
+                onEventChange(event)
               }}
               size="sm"
               className="bg-blue-600 text-white shadow-lg hover:bg-blue-700"
@@ -62,9 +62,9 @@ export function EditMode({ event, onEventChange, children }: EditModeProps) {
       )}
 
       {/* Renderizar children con contexto de edición */}
-      <div data-edit-mode={isEditMode}>
+      <EditProvider isEditMode={isEditMode} event={event} onEventChange={onEventChange}>
         {children}
-      </div>
+      </EditProvider>
     </div>
   )
 }

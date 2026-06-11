@@ -76,7 +76,7 @@ export function LocationEditor({ data, onDataChange }: LocationEditorProps) {
 
         <div className="space-y-2">
           <Label>Colores de la sección</Label>
-          <ColorSelector section="location" data={data} onDataChange={onDataChange} />
+          <ColorSelector section="location" element="title" data={data} onDataChange={onDataChange} />
         </div>
       </CardContent>
     </Card>

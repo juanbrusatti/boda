@@ -95,7 +95,7 @@ export function Location({ event }: LocationProps) {
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-2 rounded-full bg-current px-7 py-3.5 text-xs font-light uppercase tracking-[0.25em] transition-all duration-300 hover:tracking-[0.32em]"
-            style={{ color: locationColors?.background || '#ffffff' }}
+            style={{ backgroundColor: locationColors?.accent, color: '`#ffffff`' }}
           >
             <Navigation className="size-4" strokeWidth={1.5} />
             Cómo llegar
