@@ -1,4 +1,5 @@
 import type { EventConfig } from '@/types/event'
+import { getDefaultColors } from '@/lib/default-colors'
 
 export const birthday: EventConfig = {
   title: '¡Fiesta de Cumpleaños!',
@@ -106,4 +107,5 @@ export const birthday: EventConfig = {
       body: { fontFamily: 'Open Sans', fontWeight: 400 },
     },
   },
+  colors: getDefaultColors('birthday'),
 }

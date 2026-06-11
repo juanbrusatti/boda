@@ -1,5 +1,10 @@
+'use client'
+
 import Image from 'next/image'
 import { getTypographyStyle } from '@/lib/typography-utils'
+import { getColorStyle } from '@/lib/color-utils'
+import { EditableText } from '@/components/editor/editable-text'
+import { useEditContext } from '@/components/editor/edit-context'
 import type { EventConfig } from '@/types/event'
 
 interface HeroProps {
@@ -7,10 +12,18 @@ interface HeroProps {
 }
 
 export function Hero({ event }: HeroProps) {
+  const { isEditMode, onEventChange } = useEditContext()
   const heroTypography = event.typography?.hero
+  const heroColors = event.colors?.hero?.colors
+
+  const handleTextChange = (field: keyof EventConfig, value: string) => {
+    if (onEventChange) {
+      onEventChange({ ...event, [field]: value })
+    }
+  }
 
   return (
-    <section id="top" className="relative flex min-h-screen items-center justify-center overflow-hidden">
+    <section id="top" className="relative flex min-h-screen items-center justify-center overflow-hidden" style={getColorStyle(heroColors)}>
       <Image
         src={event.coverImage || '/placeholder.svg'}
         alt=""
@@ -23,34 +36,54 @@ export function Hero({ event }: HeroProps) {
       <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/70" />
 
       <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center px-6 text-center text-background">
-        <p
+        <EditableText
+          value={event.tagline}
+          onChange={(value) => handleTextChange('tagline', value)}
+          section="hero"
+          element="subtitle"
+          data={event}
+          onDataChange={onEventChange}
+          isEditMode={isEditMode}
           className="animate-[fade-up_1s_ease-out_forwards] text-xs font-light uppercase tracking-[0.45em] text-background/85"
           style={getTypographyStyle(heroTypography?.subtitle)}
-        >
-          {event.tagline}
-        </p>
+        />
 
-        <h1
+        <EditableText
+          value={event.title}
+          onChange={(value) => handleTextChange('title', value)}
+          section="hero"
+          element="title"
+          data={event}
+          onDataChange={onEventChange}
+          isEditMode={isEditMode}
           className="mt-6 text-balance font-serif text-6xl font-light leading-[0.95] tracking-tight sm:text-7xl md:text-8xl lg:text-[8.5rem]"
           style={getTypographyStyle(heroTypography?.title)}
-        >
-          {event.title}
-        </h1>
+        />
 
         <div className="mt-8 flex flex-col items-center gap-4">
           <span className="h-px w-16 bg-background/50" />
-          <p
+          <EditableText
+            value={event.dateLabel}
+            onChange={(value) => handleTextChange('dateLabel', value)}
+            section="hero"
+            element="body"
+            data={event}
+            onDataChange={onEventChange}
+            isEditMode={isEditMode}
             className="text-sm font-light uppercase tracking-[0.3em] text-background/90"
             style={getTypographyStyle(heroTypography?.body)}
-          >
-            {event.dateLabel}
-          </p>
-          <p
+          />
+          <EditableText
+            value={event.locationLabel}
+            onChange={(value) => handleTextChange('locationLabel', value)}
+            section="hero"
+            element="body"
+            data={event}
+            onDataChange={onEventChange}
+            isEditMode={isEditMode}
             className="text-xs font-light tracking-[0.2em] text-background/70"
             style={getTypographyStyle(heroTypography?.body)}
-          >
-            {event.locationLabel}
-          </p>
+          />
         </div>
 
         <a

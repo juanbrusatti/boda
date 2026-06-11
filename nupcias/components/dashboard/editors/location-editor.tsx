@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { TypographySelector } from './typography-selector'
+import { ColorSelector } from './color-selector'
 import type { EventConfig } from '@/types/event'
 
 interface LocationEditorProps {
@@ -71,6 +72,11 @@ export function LocationEditor({ data, onDataChange }: LocationEditorProps) {
           <p className="text-xs text-muted-foreground">
             Esta consulta se usa para generar el mapa y las direcciones en Google Maps
           </p>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Colores de la sección</Label>
+          <ColorSelector section="location" element="title" data={data} onDataChange={onDataChange} />
         </div>
       </CardContent>
     </Card>

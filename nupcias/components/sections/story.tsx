@@ -1,6 +1,11 @@
+'use client'
+
 import Image from 'next/image'
 import { Reveal } from '@/components/reveal'
 import { getTypographyStyle } from '@/lib/typography-utils'
+import { getColorStyle } from '@/lib/color-utils'
+import { EditableText } from '@/components/editor/editable-text'
+import { useEditContext } from '@/components/editor/edit-context'
 import type { EventConfig } from '@/types/event'
 
 interface StoryProps {
@@ -8,45 +13,77 @@ interface StoryProps {
 }
 
 export function Story({ event }: StoryProps) {
+  const { isEditMode, onEventChange } = useEditContext()
+  
   if (event.showStory === false) {
     return null
   }
 
   const storyTypography = event.typography?.story
+  const storyColors = event.colors?.story?.colors
   const storyTitle = event.storyTitle || 'Dos caminos que se vuelven uno'
   const storySubtitle = event.storySubtitle || 'Nuestra historia'
   const storyImages = event.storyImages || []
 
+  const handleTextChange = (field: keyof EventConfig, value: string) => {
+    if (onEventChange) {
+      onEventChange({ ...event, [field]: value })
+    }
+  }
+
+  const handleStoryChange = (index: number, newText: string) => {
+    if (onEventChange) {
+      const newStory = [...event.story]
+      newStory[index] = { ...newStory[index], text: newText }
+      onEventChange({ ...event, story: newStory })
+    }
+  }
+
   return (
-    <section id="historia" className="bg-background py-24 md:py-36">
+    <section id="historia" className="py-24 md:py-36" style={getColorStyle(storyColors)}>
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 md:grid-cols-2 md:gap-20">
         <Reveal className="order-2 md:order-1">
-          <p
-            className="text-xs font-light uppercase tracking-[0.4em] text-muted-foreground"
+          <EditableText
+            value={storyTitle}
+            onChange={(value) => handleTextChange('storyTitle', value)}
+            section="story"
+            element="label"
+            data={event}
+            onDataChange={onEventChange}
+            isEditMode={isEditMode}
+            className="text-xs font-light uppercase tracking-[0.4em] opacity-60"
             style={getTypographyStyle(storyTypography?.label)}
-          >
-            {storyTitle}
-          </p>
-          <h2
-            className="mt-5 text-balance font-serif text-4xl font-light leading-tight tracking-tight text-foreground md:text-5xl"
+          />
+          <EditableText
+            value={storySubtitle}
+            onChange={(value) => handleTextChange('storySubtitle', value)}
+            section="story"
+            element="title"
+            data={event}
+            onDataChange={onEventChange}
+            isEditMode={isEditMode}
+            className="mt-5 text-balance font-serif text-4xl font-light leading-tight tracking-tight md:text-5xl"
             style={getTypographyStyle(storyTypography?.title)}
-          >
-            {storySubtitle}
-          </h2>
+          />
 
           <div className="mt-8 flex flex-col gap-6">
             {event.story.map((paragraph, i) => (
-              <p
+              <EditableText
                 key={i}
-                className="text-pretty text-base font-light leading-relaxed text-muted-foreground md:text-lg"
+                value={paragraph.text}
+                onChange={(value) => handleStoryChange(i, value)}
+                section="story"
+                element="body"
+                data={event}
+                onDataChange={onEventChange}
+                isEditMode={isEditMode}
+                className="text-pretty text-base font-light leading-relaxed opacity-80 md:text-lg"
                 style={getTypographyStyle(storyTypography?.body)}
-              >
-                {paragraph.text}
-              </p>
+              />
             ))}
           </div>
 
-          <span className="mt-10 block h-px w-20 bg-accent" />
+          <span className="mt-10 block h-px w-20 bg-current opacity-30" />
         </Reveal>
 
         <Reveal delay={150} className="order-1 md:order-2">
@@ -70,8 +107,8 @@ export function Story({ event }: StoryProps) {
               ))}
             </div>
           ) : (
-            <div className="relative aspect-[4/5] overflow-hidden rounded-md bg-muted">
-              <div className="flex items-center justify-center h-full text-muted-foreground">
+            <div className="relative aspect-[4/5] overflow-hidden rounded-md bg-current opacity-10">
+              <div className="flex items-center justify-center h-full opacity-50">
                 Sin imágenes
               </div>
             </div>

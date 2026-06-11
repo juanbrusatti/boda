@@ -3,7 +3,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { getEventConfigAction, saveEventConfigAction, setEventPublishedAction } from '@/app/actions/event-config'
 import type { EventConfig } from '@/types/event'
 
-type DashboardView = 'templates' | 'edit' | 'rsvp'
+export type DashboardView = 'templates' | 'edit' | 'visual-edit' | 'rsvp'
 
 export function useDashboard() {
   const { user } = useAuth()

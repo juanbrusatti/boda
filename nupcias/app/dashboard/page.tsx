@@ -1,25 +1,26 @@
 'use client'
 
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
-import { useDashboard } from '@/hooks/useDashboard'
+import { useDashboard, type DashboardView } from '@/hooks/useDashboard'
 import { templates } from '@/data/templates'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Sparkles, Edit, Users, ArrowLeft, Loader2 } from 'lucide-react'
+import { Sparkles, Edit, Users, ArrowLeft, Loader2, Eye, Edit2 } from 'lucide-react'
 import { DashboardHeader } from '@/components/dashboard/dashboard-header'
 import { TemplatesView } from '@/components/dashboard/templates-view'
 import { EditView } from '@/components/dashboard/edit-view'
 import { RSVPView } from '@/components/dashboard/rsvp-view'
+import { TemplateWrapper } from '@/components/editor/template-wrapper'
 import type { Template } from '@/data/templates'
-
-type DashboardView = 'templates' | 'edit' | 'rsvp'
 
 export default function ClientDashboardPage() {
   const router = useRouter()
   const { user, isLoading, isClientUser, logout, error } = useAuth()
   const dashboard = useDashboard()
+  const [isVisualEditMode, setIsVisualEditMode] = useState(true)
 
   if (error) {
     return (
@@ -76,14 +77,18 @@ export default function ClientDashboardPage() {
         />
 
         <Tabs value={dashboard.currentView} onValueChange={(v) => dashboard.setCurrentView(v as DashboardView)}>
-          <TabsList className="grid w-full max-w-md grid-cols-3">
+          <TabsList className="grid w-full max-w-2xl grid-cols-4">
             <TabsTrigger value="templates">
               <Sparkles className="mr-2 h-4 w-4" />
               Templates
             </TabsTrigger>
+            <TabsTrigger value="visual-edit" disabled={!dashboard.selectedTemplate}>
+              <Eye className="mr-2 h-4 w-4" />
+              Editor Visual
+            </TabsTrigger>
             <TabsTrigger value="edit" disabled={!dashboard.selectedTemplate}>
               <Edit className="mr-2 h-4 w-4" />
-              Editar
+              Editor Avanzado
             </TabsTrigger>
             <TabsTrigger value="rsvp">
               <Users className="mr-2 h-4 w-4" />
@@ -93,6 +98,63 @@ export default function ClientDashboardPage() {
 
           <TabsContent value="templates" className="mt-6">
             <TemplatesView onSelectTemplate={handleSelectTemplate} />
+          </TabsContent>
+
+          <TabsContent value="visual-edit" className="mt-6">
+            {dashboard.selectedTemplate && dashboard.editedData ? (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-2xl font-semibold mb-2">Editor Visual</h2>
+                    <p className="text-muted-foreground">Edita directamente en el template con doble click</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" onClick={() => dashboard.setCurrentView('templates')}>
+                      <ArrowLeft className="mr-2 h-4 w-4" />
+                      Volver
+                    </Button>
+                    <Button onClick={dashboard.handleSaveChanges} disabled={dashboard.saving}>
+                      {dashboard.saving ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Guardando...
+                        </>
+                      ) : (
+                        'Guardar cambios'
+                      )}
+                    </Button>
+                  </div>
+                </div>
+
+                {dashboard.saveError && (
+                  <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-md">
+                    {dashboard.saveError}
+                  </div>
+                )}
+
+                <div className="border rounded-lg overflow-hidden">
+                  <TemplateWrapper 
+                    eventConfig={dashboard.editedData} 
+                    templateId={dashboard.selectedTemplate} 
+                    isEditMode={isVisualEditMode}
+                    onDataChange={dashboard.setEditedData}
+                  />
+                </div>
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center py-12">
+                  <Sparkles className="h-12 w-12 text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground text-center">
+                    Selecciona un template para comenzar a editarlo
+                  </p>
+                  <Button onClick={() => dashboard.setCurrentView('templates')} className="mt-4">
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Ver templates
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           <TabsContent value="edit" className="mt-6">
