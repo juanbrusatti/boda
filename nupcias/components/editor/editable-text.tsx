@@ -39,6 +39,8 @@ export function EditableText({
   const [isMounted, setIsMounted] = useState(false)
   const contentRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
+  const initialValueRef = useRef(value)
+  const hasCommittedRef = useRef(false)
 
   useEffect(() => {
     setIsMounted(true)
@@ -50,6 +52,11 @@ export function EditableText({
           panelRef.current && !panelRef.current.contains(event.target as Node)) {
         setIsEditing(false)
         setShowPanel(false)
+        // Save changes when closing
+        const newText = contentRef.current?.textContent || ''
+        if (newText !== value) {
+          onChange(newText)
+        }
       }
     }
 
@@ -57,7 +64,7 @@ export function EditableText({
       document.addEventListener('mousedown', handleClickOutside)
       return () => document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [isEditing, showPanel])
+  }, [isEditing, showPanel, value, onChange])
 
   useEffect(() => {
     if (showPanel && contentRef.current) {
@@ -75,11 +82,17 @@ export function EditableText({
     if (!isEditMode) return
     setIsEditing(true)
     setShowPanel(true)
+    initialValueRef.current = value
+    hasCommittedRef.current = false
   }
 
-  const handleContentChange = (e: React.FormEvent<HTMLDivElement>) => {
-    const newText = e.currentTarget.textContent || ''
-    onChange(newText)
+  const handleBlur = () => {
+    if (hasCommittedRef.current) return
+    const newText = contentRef.current?.textContent || ''
+    if (newText !== value) {
+      onChange(newText)
+      hasCommittedRef.current = true
+    }
   }
 
   if (!isEditMode) {
@@ -88,23 +101,31 @@ export function EditableText({
 
   return (
     <div ref={contentRef} className="relative group">
-      <div
-        contentEditable={isEditing}
-        onDoubleClick={handleDoubleClick}
-        onInput={handleContentChange}
-        suppressContentEditableWarning
-        className={className}
-        style={{
-          outline: isEditing ? '2px solid #3b82f6' : 'none',
-          borderRadius: isEditing ? '4px' : '0',
-          padding: isEditing ? '2px 4px' : '0',
-          cursor: isEditMode ? 'pointer' : 'default',
-          ...style,
-        }}
-        title="Doble click para editar"
-      >
-        {children || value}
-      </div>
+      {isEditing ? (
+        <div
+          contentEditable={isEditing}
+          onDoubleClick={handleDoubleClick}
+          onBlur={handleBlur}
+          suppressContentEditableWarning
+          className={className}
+          style={{
+            outline: isEditing ? '2px solid #3b82f6' : 'none',
+            borderRadius: isEditing ? '4px' : '0',
+            padding: isEditing ? '2px 4px' : '0',
+            cursor: isEditMode ? 'pointer' : 'default',
+            ...style,
+          }}
+          title="Doble click para editar"
+          dangerouslySetInnerHTML={{ __html: initialValueRef.current }}
+        />
+      ) : (
+        <div
+          className={className}
+          style={style}
+        >
+          {children || value}
+        </div>
+      )}
 
       {isMounted && showPanel && createPortal(
         <div 
