@@ -39,6 +39,7 @@ export function EditableText({
   const [isMounted, setIsMounted] = useState(false)
   const contentRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
+  const initialValueRef = useRef(value)
 
   useEffect(() => {
     setIsMounted(true)
@@ -50,6 +51,11 @@ export function EditableText({
           panelRef.current && !panelRef.current.contains(event.target as Node)) {
         setIsEditing(false)
         setShowPanel(false)
+        // Save changes when closing
+        const newText = contentRef.current?.textContent || ''
+        if (newText !== value) {
+          onChange(newText)
+        }
       }
     }
 
@@ -57,7 +63,7 @@ export function EditableText({
       document.addEventListener('mousedown', handleClickOutside)
       return () => document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [isEditing, showPanel])
+  }, [isEditing, showPanel, value, onChange])
 
   useEffect(() => {
     if (showPanel && contentRef.current) {
@@ -75,11 +81,14 @@ export function EditableText({
     if (!isEditMode) return
     setIsEditing(true)
     setShowPanel(true)
+    initialValueRef.current = value
   }
 
-  const handleContentChange = (e: React.FormEvent<HTMLDivElement>) => {
-    const newText = e.currentTarget.textContent || ''
-    onChange(newText)
+  const handleBlur = () => {
+    const newText = contentRef.current?.textContent || ''
+    if (newText !== value) {
+      onChange(newText)
+    }
   }
 
   if (!isEditMode) {
@@ -91,7 +100,7 @@ export function EditableText({
       <div
         contentEditable={isEditing}
         onDoubleClick={handleDoubleClick}
-        onInput={handleContentChange}
+        onBlur={handleBlur}
         suppressContentEditableWarning
         className={className}
         style={{
@@ -102,9 +111,8 @@ export function EditableText({
           ...style,
         }}
         title="Doble click para editar"
-      >
-        {children || value}
-      </div>
+        dangerouslySetInnerHTML={{ __html: isEditing ? initialValueRef.current : (children || value) }}
+      />
 
       {isMounted && showPanel && createPortal(
         <div 
