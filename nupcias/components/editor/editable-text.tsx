@@ -40,6 +40,7 @@ export function EditableText({
   const contentRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const initialValueRef = useRef(value)
+  const hasCommittedRef = useRef(false)
 
   useEffect(() => {
     setIsMounted(true)
@@ -82,12 +83,15 @@ export function EditableText({
     setIsEditing(true)
     setShowPanel(true)
     initialValueRef.current = value
+    hasCommittedRef.current = false
   }
 
   const handleBlur = () => {
+    if (hasCommittedRef.current) return
     const newText = contentRef.current?.textContent || ''
     if (newText !== value) {
       onChange(newText)
+      hasCommittedRef.current = true
     }
   }
 
@@ -97,22 +101,31 @@ export function EditableText({
 
   return (
     <div ref={contentRef} className="relative group">
-      <div
-        contentEditable={isEditing}
-        onDoubleClick={handleDoubleClick}
-        onBlur={handleBlur}
-        suppressContentEditableWarning
-        className={className}
-        style={{
-          outline: isEditing ? '2px solid #3b82f6' : 'none',
-          borderRadius: isEditing ? '4px' : '0',
-          padding: isEditing ? '2px 4px' : '0',
-          cursor: isEditMode ? 'pointer' : 'default',
-          ...style,
-        }}
-        title="Doble click para editar"
-        dangerouslySetInnerHTML={{ __html: isEditing ? initialValueRef.current : (children || value) }}
-      />
+      {isEditing ? (
+        <div
+          contentEditable={isEditing}
+          onDoubleClick={handleDoubleClick}
+          onBlur={handleBlur}
+          suppressContentEditableWarning
+          className={className}
+          style={{
+            outline: isEditing ? '2px solid #3b82f6' : 'none',
+            borderRadius: isEditing ? '4px' : '0',
+            padding: isEditing ? '2px 4px' : '0',
+            cursor: isEditMode ? 'pointer' : 'default',
+            ...style,
+          }}
+          title="Doble click para editar"
+          dangerouslySetInnerHTML={{ __html: initialValueRef.current }}
+        />
+      ) : (
+        <div
+          className={className}
+          style={style}
+        >
+          {children || value}
+        </div>
+      )}
 
       {isMounted && showPanel && createPortal(
         <div 
